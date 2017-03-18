@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "522126784023",
+    "firebase_url": "https://quicksnap-97fd6.firebaseio.com",
+    "project_id": "quicksnap-97fd6",
+    "storage_bucket": "quicksnap-97fd6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:522126784023:android:e74619b1dacad469",
+        "android_client_info": {
+          "package_name": "com.joshuaduffill.quicksnap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "522126784023-f68he95vgfv2e2hllj4eo7ps3tfkhut7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.joshuaduffill.quicksnap",
+            "certificate_hash": "46F3480E248E865C16228503720D65D9C9CDAB01"
+          }
+        },
+        {
+          "client_id": "522126784023-18490t98evgp99glatjjisn1g695s1ss.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAp3i-S9_3itKRxW3uzrEhKWKfWQZAgp1s"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "522126784023-18490t98evgp99glatjjisn1g695s1ss.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
