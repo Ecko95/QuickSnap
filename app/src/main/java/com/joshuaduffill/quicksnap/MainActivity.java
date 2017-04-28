@@ -1,8 +1,14 @@
 package com.joshuaduffill.quicksnap;
 
+
+import android.*;
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -18,6 +24,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
+
+    private final static int READ_EXTERNAL_STORAGE_PERMISSION_RESULT = 0;
 
     //initialize our variables
 
@@ -63,7 +71,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        checkReadExternalStoragePermission();
+
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case READ_EXTERNAL_STORAGE_PERMISSION_RESULT:
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    //call cursor loader
+                    Toast.makeText(this,"now you have access to view thumbnails", Toast.LENGTH_SHORT).show();
+                }
+                    break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+    }
+
     private void registerUser() {
         
         String email = etEmail.getText().toString().trim();
@@ -119,4 +145,21 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    private void checkReadExternalStoragePermission(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                    PackageManager.PERMISSION_GRANTED){
+            }else{
+                if(shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)){
+                    Toast.makeText(this,"App nedds to view thumbnails", Toast.LENGTH_SHORT).show();
+                }
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        READ_EXTERNAL_STORAGE_PERMISSION_RESULT);
+            }
+        }else{
+
+        }
+    }
+
 }
