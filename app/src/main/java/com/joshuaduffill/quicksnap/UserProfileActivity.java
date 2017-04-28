@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -28,12 +29,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class UserProfileActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor>{
+        implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor>,
+        MediaStoreAdapter.OnClickThumbnailListener{
 
     private final static int MEDIASTORE_LOADER_ID = 0;
 
@@ -183,6 +186,7 @@ public class UserProfileActivity extends AppCompatActivity
         String[] projection = {
                 MediaStore.Files.FileColumns._ID,
                 MediaStore.Files.FileColumns.DATE_ADDED,
+                MediaStore.Files.FileColumns.DATA,
                 MediaStore.Files.FileColumns.MEDIA_TYPE
         };
         String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
@@ -210,5 +214,20 @@ public class UserProfileActivity extends AppCompatActivity
         mMediaStoreAdapter.changeCursor(null);
     }
 
+    @Override
+    public void OnClickImage(Uri imageUri) {
+        //Toast.makeText(UserProfileActivity.this,"Image uri = " + imageUri.toString(), Toast.LENGTH_SHORT).show();
 
+        //provides the location of calling activity & data of location of selected image
+        Intent fullScreenIntent = new Intent(this, FullScreenImageActivity.class);
+        fullScreenIntent.setData(imageUri);
+        startActivity(fullScreenIntent);
+    }
+
+    @Override
+    public void OnClickVideo(Uri videoUri) {
+        Intent videoPlayIntent = new Intent(this, VideoPlayActivity.class);
+        videoPlayIntent.setData(videoUri);
+        startActivity(videoPlayIntent);
+    }
 }
