@@ -52,7 +52,9 @@
             android:layout_height="wrap_content"
             android:text="@string/btn_sign_in"
             android:layout_margin="10dp"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            style="@android:style/Widget.Material.Button.Colored"
+            />
 
         <TextView
             android:id="@+id/txtSignUp"

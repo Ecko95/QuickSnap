@@ -42,7 +42,8 @@
             android:layout_height="wrap_content"
             android:text="@string/btn_register"
             android:layout_margin="10dp"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            style="@android:style/Widget.Material.Button.Colored"/>
 
         <TextView
             android:id="@+id/txtSignIn"
