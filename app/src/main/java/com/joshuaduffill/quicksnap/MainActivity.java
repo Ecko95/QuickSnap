@@ -5,8 +5,10 @@ import android.*;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +20,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.paolorotolo.appintro.AppIntro;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -44,9 +47,46 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        //runs AppIntro
+        startActivity(new Intent(getApplicationContext(),IntroActivity.class));
+
+//        //  Declare a new thread to do a preference check
+//        Thread t = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                //  Initialize SharedPreferences
+//                SharedPreferences getPrefs = PreferenceManager
+//                        .getDefaultSharedPreferences(getBaseContext());
+//
+//                //  Create a new boolean and preference and set it to true
+//                boolean isFirstStart = getPrefs.getBoolean("firstStart", true);
+//
+//                //  If the activity has never started before...
+//                if (isFirstStart) {
+//
+//                    //  Launch app intro
+//                    Intent i = new Intent(MainActivity.this, IntroActivity.class);
+//                    startActivity(i);
+//
+//                    //  Make a new preferences editor
+//                    SharedPreferences.Editor e = getPrefs.edit();
+//
+//                    //  Edit preference to make it false because we don't want this to run again
+//                    e.putBoolean("firstStart", false);
+//
+//                    //  Apply changes
+//                    e.apply();
+//                }
+//            }
+//        });
+//
+//        // Start the thread
+//        t.start();
+
+
         //initializing FireBase Auth object
         firebaseAuth = FirebaseAuth.getInstance();
-
 
         //initialising Views
         progressDialog = new ProgressDialog(this);
@@ -71,7 +111,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        checkReadExternalStoragePermission();
+
+
+//        checkReadExternalStoragePermission();
 
     }
 

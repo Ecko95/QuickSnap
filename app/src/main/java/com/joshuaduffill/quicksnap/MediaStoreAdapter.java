@@ -47,11 +47,14 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
 //        if (bitmap != null){
 //            holder.getmImageView().setImageBitmap(bitmap);
 //        }
+
         Glide.with(mActivity)
                 .load(getUriFromMediaStore(position))
+                .thumbnail( 0.1f )
                 .centerCrop()
-                .override(96,96)
                 .into(holder.getmImageView());
+
+
     }
 
     @Override
@@ -156,4 +159,5 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
             default:
         }
     }
+
 }
