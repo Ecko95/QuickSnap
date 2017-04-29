@@ -72,7 +72,7 @@ public class UserProfileActivity extends AppCompatActivity
             //close current activity
             finish();
             //start user profile activity
-            startActivity(new Intent(this, LoginActivity.class));
+            startActivity(new Intent(this, MainActivity.class));
 
         }
 
@@ -96,6 +96,7 @@ public class UserProfileActivity extends AppCompatActivity
 
         //initialise Load of RECYCLER VIEW
         getSupportLoaderManager().initLoader(MEDIASTORE_LOADER_ID, null, this);
+
 
         FloatingActionButton cameraFab = (FloatingActionButton) findViewById(R.id.cameraFab);
         cameraFab.setOnClickListener(new View.OnClickListener() {
@@ -137,6 +138,9 @@ public class UserProfileActivity extends AppCompatActivity
             Intent editPhotoIntent = new Intent(this, EditImageActivity.class);
             editPhotoIntent.putExtra("URL", uri);
             startActivity(editPhotoIntent);
+
+            //refreshes the recycler view (list of images)
+            getSupportLoaderManager().restartLoader(MEDIASTORE_LOADER_ID,null,this);
 
 
 // Restore state
@@ -198,7 +202,9 @@ public class UserProfileActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            // Handle the camera action
+            Intent callCameraApp = new Intent();
+            callCameraApp.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(callCameraApp, ACTIVITY_START_CAMERA_APP);
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -212,7 +218,7 @@ public class UserProfileActivity extends AppCompatActivity
         } else if (id == R.id.nav_logOut){
             firebaseAuth.signOut();
             finish();
-            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

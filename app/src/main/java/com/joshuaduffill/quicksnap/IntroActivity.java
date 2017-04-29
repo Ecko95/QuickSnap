@@ -27,8 +27,8 @@ public class IntroActivity extends AppIntro {
 
         // Instead of fragments, you can also use our default slide
         // Just set a title, description, background and image. AppIntro will do the rest.
-        addSlide(AppIntroFragment.newInstance("QuickSnap!", "QuickSnap is a photo editor that allows you to capture and share your best moments with friends and family", R.mipmap.quicksnap_logo, getColor(R.color.colorPrimary)));
-        addSlide(AppIntroFragment.newInstance("Snap, Edit & Share!", "In order for the app to work effectively we require storage and camera permissions", R.mipmap.quicksnap_logo, getColor(R.color.colorPrimary)));
+        addSlide(AppIntroFragment.newInstance("QuickSnap!", "QuickSnap is a photo editor that allows you to capture and share your best moments with friends and family", R.mipmap.quicksnap_logo, getColor(R.color.primary_dark)));
+        addSlide(AppIntroFragment.newInstance("Snap, Edit & Share!", "In order for the app to work effectively we require storage and camera permissions", R.mipmap.quicksnap_logo, getColor(R.color.primary_dark)));
 
 
         // Ask for CAMERA permission on the second slide

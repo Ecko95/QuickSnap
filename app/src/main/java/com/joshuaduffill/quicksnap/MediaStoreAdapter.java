@@ -54,7 +54,6 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
                 .centerCrop()
                 .into(holder.getmImageView());
 
-
     }
 
     @Override
@@ -158,6 +157,9 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
                 break;
             default:
         }
+    }
+    public void refreshBlockOverlay(int position) {
+        notifyItemChanged(position);
     }
 
 }

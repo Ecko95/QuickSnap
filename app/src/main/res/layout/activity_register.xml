@@ -1,32 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_login"
+    android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.joshuaduffill.quicksnap.LoginActivity">
+    tools:context="com.joshuaduffill.quicksnap.RegisterActivity">
 
-    <TextView
-        android:text="User Login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/linearLayout"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="46dp"
-        android:id="@+id/textView"
-        android:textSize="24sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/linearLayout">
+        android:layout_centerHorizontal="true">
 
         <EditText
             android:id="@+id/etEmail"
@@ -47,22 +37,31 @@
             android:textAlignment="viewStart" />
 
         <Button
-            android:id="@+id/btnSignIn"
+            android:id="@+id/btnRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/btn_sign_in"
+            android:text="@string/btn_register"
             android:layout_margin="10dp"
             android:textAlignment="center" />
 
         <TextView
-            android:id="@+id/txtSignUp"
-            android:text="@string/txt_sign_up"
+            android:id="@+id/txtSignIn"
+            android:text="@string/txt_sign_in"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center" />
 
     </LinearLayout>
 
+    <TextView
+        android:text="User Registration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView"
+        android:textSize="24sp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="48dp" />
 
 
 </RelativeLayout>

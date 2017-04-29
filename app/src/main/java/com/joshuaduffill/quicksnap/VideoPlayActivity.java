@@ -14,6 +14,9 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
+
+import java.io.IOException;
 
 public class VideoPlayActivity extends AppCompatActivity implements SurfaceHolder.Callback, MediaPlayer.OnCompletionListener,
     AudioManager.OnAudioFocusChangeListener{
@@ -99,15 +102,23 @@ public class VideoPlayActivity extends AppCompatActivity implements SurfaceHolde
         int requestAudioFocusResult = mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
         if(requestAudioFocusResult == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
             mMediaPlayer.start();
-            btnPlayPause.setImageResource(R.drawable.ic_menu_gallery);
+            btnPlayPause.setImageResource(R.mipmap.ic_pause_circle_filled);
         }
     }
 
     private void mediaPause() {
         mMediaPlayer.pause();
-        btnPlayPause.setImageResource(R.drawable.ic_menu_send);
+        btnPlayPause.setImageResource(R.mipmap.ic_play_circle_filled);
         mAudioManager.abandonAudioFocus(this);
-        unregisterReceiver(mNoisyAudio);
+
+        if (mNoisyAudio != null) {
+            // Unregister receiver.
+            unregisterReceiver(mNoisyAudio);
+            // The important bit here is to set the receiver
+            // to null once it has been unregistered.
+            mNoisyAudio = null;
+        }
+
     }
 
     @Override
@@ -130,7 +141,7 @@ public class VideoPlayActivity extends AppCompatActivity implements SurfaceHolde
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-        btnPlayPause.setImageResource(R.drawable.ic_menu_send);
+        btnPlayPause.setImageResource(R.mipmap.ic_play_circle_filled);
     }
 
     @Override

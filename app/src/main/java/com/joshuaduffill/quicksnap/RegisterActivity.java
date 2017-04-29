@@ -16,45 +16,54 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.UserProfileChangeRequest;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private Button btnSignIn;
+public class RegisterActivity extends AppCompatActivity {
+
+    //initialize our variables
+
+    private Button btnRegister;
     private EditText etEmail;
     private EditText etPassword;
-    private TextView txtSignUp;
-    private FirebaseAuth firebaseAuth;
+    private TextView txtSignIn;
+
     private ProgressDialog progressDialog;
+
+    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
 
         //initialise database Auth
         firebaseAuth = FirebaseAuth.getInstance();
 
-        if(firebaseAuth.getCurrentUser() != null){
-            //start user profile activity
-            startActivity(new Intent(this, UserProfileActivity.class));
-            //close current activity
-            finish();
-        }
-
-        //initialise views
-
-        etEmail = (EditText)findViewById(R.id.etEmail);
-        etPassword = (EditText) findViewById(R.id.etPassword);
-        btnSignIn = (Button) findViewById(R.id.btnSignIn);
-        txtSignUp = (TextView)findViewById(R.id.txtSignUp);
-
-        btnSignIn.setOnClickListener(this);
-        txtSignUp.setOnClickListener(this);
-
+        //initialising Views
         progressDialog = new ProgressDialog(this);
+        btnRegister = (Button) findViewById(R.id.btnRegister);
+        etEmail = (EditText) findViewById(R.id.etEmail);
+        etPassword = (EditText) findViewById(R.id.etPassword);
+        txtSignIn = (TextView) findViewById(R.id.txtSignIn);
+
+        btnRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                registerUser();
+
+            }
+        });
+        txtSignIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+
+            }
+        });
     }
-    private void userLogin(){
+    private void registerUser() {
+
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
@@ -71,37 +80,41 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             //stops the function from executing further
             return;
         }
-        progressDialog.setMessage("Sign In... Please Wait");
+
+        /*
+        If users enters valid email & password
+        we will show a progressDialog to indicate that a new User is being created
+         */
+
+        progressDialog.setMessage("Registering User... Please Wait");
         progressDialog.show();
 
-        firebaseAuth.signInWithEmailAndPassword(email,password)
+        //creates a new User inside FireBase Database
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
 
-                        if(task.isSuccessful()){
-                            //close current activity;
-                            finish();
                             //start user profile activity
                             startActivity(new Intent(getApplicationContext(), UserProfileActivity.class));
+                            //close current activity
+                            finish();
 
-                        }
-                        else {
-                            Toast.makeText(LoginActivity.this, "Failed to log in", Toast.LENGTH_SHORT).show();
+                            /*
+                            User is registered and logged in successfully
+                            Start profile activity
+                            For now we only are displaying a message
+                             */
+
+                            Toast.makeText(RegisterActivity.this, "You have Registered Successfully", Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            Toast.makeText(RegisterActivity.this, "Failed to register, Please try again", Toast.LENGTH_SHORT).show();
                         }
                         progressDialog.dismiss();
+
                     }
                 });
-
-    }
-
-    @Override
-    public void onClick(View view) {
-        if(view == btnSignIn){
-            userLogin();
-        }
-        if(view == txtSignUp){
-            startActivity(new Intent(this,MainActivity.class));
-        }
     }
 }

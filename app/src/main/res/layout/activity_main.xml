@@ -10,13 +10,23 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.joshuaduffill.quicksnap.MainActivity">
 
+    <TextView
+        android:text="User Login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="46dp"
+        android:id="@+id/textView"
+        android:textSize="24sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true">
+        android:layout_centerHorizontal="true"
+        android:id="@+id/linearLayout">
 
         <EditText
             android:id="@+id/etEmail"
@@ -37,31 +47,20 @@
             android:textAlignment="viewStart" />
 
         <Button
-            android:id="@+id/btnRegister"
+            android:id="@+id/btnSignIn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/btn_register"
+            android:text="@string/btn_sign_in"
             android:layout_margin="10dp"
             android:textAlignment="center" />
 
         <TextView
-            android:id="@+id/txtSignIn"
-            android:text="@string/txt_sign_in"
+            android:id="@+id/txtSignUp"
+            android:text="@string/txt_sign_up"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center" />
 
     </LinearLayout>
-
-    <TextView
-        android:text="User Registration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView"
-        android:textSize="24sp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="48dp" />
-
 
 </RelativeLayout>

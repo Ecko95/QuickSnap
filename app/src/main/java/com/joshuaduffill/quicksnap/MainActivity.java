@@ -32,14 +32,21 @@ public class MainActivity extends AppCompatActivity {
 
     //initialize our variables
 
-    private Button btnRegister;
+//    private Button btnRegister;
+//    private EditText etEmail;
+//    private EditText etPassword;
+//    private TextView txtSignIn;
+//
+//    private ProgressDialog progressDialog;
+//
+//    private FirebaseAuth firebaseAuth;
+
+    private Button btnSignIn;
     private EditText etEmail;
     private EditText etPassword;
-    private TextView txtSignIn;
-
-    private ProgressDialog progressDialog;
-
+    private TextView txtSignUp;
     private FirebaseAuth firebaseAuth;
+    private ProgressDialog progressDialog;
 
 
     @Override
@@ -48,74 +55,154 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        //runs AppIntro
-        startActivity(new Intent(getApplicationContext(),IntroActivity.class));
 
-//        //  Declare a new thread to do a preference check
-//        Thread t = new Thread(new Runnable() {
+//        //runs AppIntro
+//        startActivity(new Intent(getApplicationContext(),IntroActivity.class));
+
+
+
+
+        progressDialog = new ProgressDialog(this);
+
+        //  Declare a new thread to do a preference check
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //  Initialize SharedPreferences
+                SharedPreferences getPrefs = PreferenceManager
+                        .getDefaultSharedPreferences(getBaseContext());
+
+                //  Create a new boolean and preference and set it to true
+                boolean isFirstStart = getPrefs.getBoolean("firstStart", true);
+
+                //  If the activity has never started before...
+                if (isFirstStart) {
+
+                    //  Launch app intro
+                    Intent i = new Intent(MainActivity.this, IntroActivity.class);
+                    startActivity(i);
+
+                    //  Make a new preferences editor
+                    SharedPreferences.Editor e = getPrefs.edit();
+
+                    //  Edit preference to make it false because we don't want this to run again
+                    e.putBoolean("firstStart", false);
+
+                    //  Apply changes
+                    e.apply();
+                }
+            }
+        });
+
+        // Start the thread
+        t.start();
+
+
+//        //initializing FireBase Auth object
+//        firebaseAuth = FirebaseAuth.getInstance();
+//
+//        //initialising Views
+//        progressDialog = new ProgressDialog(this);
+//        btnRegister = (Button) findViewById(R.id.btnRegister);
+//        etEmail = (EditText) findViewById(R.id.etEmail);
+//        etPassword = (EditText) findViewById(R.id.etPassword);
+//        txtSignIn = (TextView) findViewById(R.id.txtSignIn);
+//
+//        btnRegister.setOnClickListener(new View.OnClickListener() {
 //            @Override
-//            public void run() {
-//                //  Initialize SharedPreferences
-//                SharedPreferences getPrefs = PreferenceManager
-//                        .getDefaultSharedPreferences(getBaseContext());
+//            public void onClick(View view) {
+//                registerUser();
 //
-//                //  Create a new boolean and preference and set it to true
-//                boolean isFirstStart = getPrefs.getBoolean("firstStart", true);
-//
-//                //  If the activity has never started before...
-//                if (isFirstStart) {
-//
-//                    //  Launch app intro
-//                    Intent i = new Intent(MainActivity.this, IntroActivity.class);
-//                    startActivity(i);
-//
-//                    //  Make a new preferences editor
-//                    SharedPreferences.Editor e = getPrefs.edit();
-//
-//                    //  Edit preference to make it false because we don't want this to run again
-//                    e.putBoolean("firstStart", false);
-//
-//                    //  Apply changes
-//                    e.apply();
-//                }
 //            }
 //        });
+//        txtSignIn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                finish();
+//                startActivity(new Intent(getApplicationContext(),LoginActivity.class));
 //
-//        // Start the thread
-//        t.start();
+//            }
+//        });
 
 
-        //initializing FireBase Auth object
+        //initialise database Auth
         firebaseAuth = FirebaseAuth.getInstance();
 
-        //initialising Views
-        progressDialog = new ProgressDialog(this);
-        btnRegister = (Button) findViewById(R.id.btnRegister);
-        etEmail = (EditText) findViewById(R.id.etEmail);
-        etPassword = (EditText) findViewById(R.id.etPassword);
-        txtSignIn = (TextView) findViewById(R.id.txtSignIn);
+        if(firebaseAuth.getCurrentUser() != null){
+            //start user profile activity
+            startActivity(new Intent(this, UserProfileActivity.class));
+            //close current activity
+            finish();
+        }
 
-        btnRegister.setOnClickListener(new View.OnClickListener() {
+        //initialise views
+
+        etEmail = (EditText)findViewById(R.id.etEmail);
+        etPassword = (EditText) findViewById(R.id.etPassword);
+        btnSignIn = (Button) findViewById(R.id.btnSignIn);
+        txtSignUp = (TextView)findViewById(R.id.txtSignUp);
+
+
+        btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                registerUser();
+                userLogin();
 
             }
         });
-        txtSignIn.setOnClickListener(new View.OnClickListener() {
+        txtSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
-                startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+                startActivity(new Intent(getApplicationContext(),RegisterActivity.class));
 
             }
         });
-
-
 
 //        checkReadExternalStoragePermission();
 
     }
+    private void userLogin(){
+        String email = etEmail.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+
+        if (TextUtils.isEmpty(email)) {
+            //email is empty
+            Toast.makeText(this, "Please enter an email address", Toast.LENGTH_SHORT).show();
+            //stops the function from executing further
+            return;
+        }
+
+        if (TextUtils.isEmpty(password)) {
+            //password is empty
+            Toast.makeText(this, "Please enter a password", Toast.LENGTH_SHORT).show();
+            //stops the function from executing further
+            return;
+        }
+        progressDialog.setMessage("Sign In... Please Wait");
+        progressDialog.show();
+
+        firebaseAuth.signInWithEmailAndPassword(email,password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+
+                        if(task.isSuccessful()){
+                            //close current activity;
+                            finish();
+                            //start user profile activity
+                            startActivity(new Intent(getApplicationContext(), UserProfileActivity.class));
+
+                        }
+                        else {
+                            Toast.makeText(MainActivity.this, "Failed to log in", Toast.LENGTH_SHORT).show();
+                        }
+                        progressDialog.dismiss();
+                    }
+                });
+
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

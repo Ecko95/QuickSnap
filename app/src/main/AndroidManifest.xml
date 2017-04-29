@@ -21,7 +21,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity" />
         <activity
             android:name=".UserProfileActivity"
             android:label="@string/app_name"
@@ -29,7 +28,8 @@
         <activity android:name=".FullScreenImageActivity" />
         <activity android:name=".VideoPlayActivity" />
         <activity android:name=".IntroActivity" />
-        <activity android:name=".EditImageActivity"></activity>
+        <activity android:name=".EditImageActivity" />
+        <activity android:name=".RegisterActivity" />
     </application>
 
 </manifest>
