@@ -5,16 +5,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.design.*;
+import android.support.design.BuildConfig;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
+import android.support.v4.content.FileProvider;
 import android.support.v4.content.Loader;
+import android.support.v4.provider.DocumentFile;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -37,6 +43,12 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class UserProfileActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor>,
         MediaStoreAdapter.OnClickThumbnailListener{
@@ -53,11 +65,15 @@ public class UserProfileActivity extends AppCompatActivity
     private View mHeaderView;
     private TextView mDrawerHeaderTitle;
 
-    private Button btnLogOut;
-
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     RecyclerView.Adapter adapter;
+
+    private String mImageFileLocation = "";
+    private String GALLERY_DIRECTORY_NAME = "QuickSnap";
+    private File mGalleryFolder;
+    private Uri fileUri;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +91,9 @@ public class UserProfileActivity extends AppCompatActivity
             startActivity(new Intent(this, MainActivity.class));
 
         }
+
+        //creates IMAGE GALLERY FOLDER
+//        createImageGallery();
 
         FirebaseUser user = firebaseAuth.getCurrentUser();
 
@@ -94,8 +113,15 @@ public class UserProfileActivity extends AppCompatActivity
         mMediaStoreAdapter = new MediaStoreAdapter(this);
         mThumbailRecyclerView.setAdapter(mMediaStoreAdapter);
 
+
+        mThumbailRecyclerView.setHasFixedSize(true);
+        mThumbailRecyclerView.setItemViewCacheSize(20);
+        mThumbailRecyclerView.setDrawingCacheEnabled(true);
+        mThumbailRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
         //initialise Load of RECYCLER VIEW
         getSupportLoaderManager().initLoader(MEDIASTORE_LOADER_ID, null, this);
+
 
 
         FloatingActionButton cameraFab = (FloatingActionButton) findViewById(R.id.cameraFab);
@@ -104,9 +130,38 @@ public class UserProfileActivity extends AppCompatActivity
             public void onClick(View view) {
 
                 //opens camera app
-                Intent callCameraApp = new Intent();
-                callCameraApp.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(callCameraApp, ACTIVITY_START_CAMERA_APP);
+                Intent callCameraAppIntent = new Intent();
+                callCameraAppIntent.setAction(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+
+                File photoFile = null;
+                try{
+                    photoFile = createImageFile();
+                    fileUri = FileProvider.getUriForFile(UserProfileActivity.this, getApplicationContext().getPackageName() + ".share",
+                            createImageFile());
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
+
+                callCameraAppIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+
+                startActivityForResult(callCameraAppIntent, ACTIVITY_START_CAMERA_APP);
+
+                //opens camera app
+//                Intent callCameraApp = new Intent();
+//                callCameraApp.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+//                callCameraApp.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+//                startActivityForResult(callCameraApp, ACTIVITY_START_CAMERA_APP);
+
+//                Intent callCameraApp = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+//                try{
+//                    fileUri = Uri.fromFile(CreateImageFile2());
+//                }catch (IOException e){
+//
+//                }
+//                callCameraApp.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+//                //stored the image and get the URI
+//                startActivityForResult(callCameraApp, ACTIVITY_START_CAMERA_APP);
+
 
 
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -133,23 +188,79 @@ public class UserProfileActivity extends AppCompatActivity
 //            Toast.makeText(this, "Picture taken successfully", Toast.LENGTH_SHORT).show();
 //            Bundle extras = resultData.getExtras();
 //            Bitmap photoCapturedBitmap = (Bitmap) extras.get("resultData");
+//
+//            Bitmap photoCapturedBitmap = BitmapFactory.decodeFile(mImageFileLocation);
 
-            Uri uri = resultData.getData();
+//            if(fileUri != null){
+//
+//                Uri imageTaken = fileUri;
+//                editPhotoIntent.putExtra("URL", imageTaken);
+//                startActivity(editPhotoIntent);
+//            }
+//
+
+
+
+            //assign photo to image view on edit imagea ctivity
             Intent editPhotoIntent = new Intent(this, EditImageActivity.class);
-            editPhotoIntent.putExtra("URL", uri);
+            editPhotoIntent.putExtra("URL", fileUri);
+
+
             startActivity(editPhotoIntent);
+            Toast.makeText(this, "photo taken and saved", Toast.LENGTH_SHORT).show();
 
             //refreshes the recycler view (list of images)
             getSupportLoaderManager().restartLoader(MEDIASTORE_LOADER_ID,null,this);
 
+        }
 
-// Restore state
+    }
 
+    private void createImageGallery(){
 
+//        File storageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+//        File mGalleryFolder = new File(Environment.getExternalStorageDirectory(), GALLERY_DIRECTORY_NAME);
+
+        //reference to the device storage
+//        mGalleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), GALLERY_DIRECTORY_NAME);
+
+        Toast.makeText(this, mGalleryFolder.toString(), Toast.LENGTH_LONG).show();
+        //does PICTURES directory exist?
+        if(!mGalleryFolder.exists()){
+            mGalleryFolder.mkdirs();
         }
     }
 
+    private File createImageFile() throws IOException{
 
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "IMAGE_" + timeStamp + "_";
+
+//        File storageDirectory = new File (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), GALLERY_DIRECTORY_NAME);
+//        mGalleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), GALLERY_DIRECTORY_NAME);
+        File storageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+
+
+//        File image = File.createTempFile(imageFileName,".jpg",storageDirectory);
+        File image = new File(storageDirectory + File.separator + imageFileName + ".jpg");
+
+        mMediaStoreAdapter.notifyDataSetChanged();
+        mImageFileLocation = image.getAbsolutePath();
+        return image;
+    }
+
+//    File createImageFile() throws IOException{
+//        String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
+//        String imageFileName = "IMAGE_" + timeStamp + "_";
+//
+//        File image = new File(mGalleryFolder + File.separator + imageFileName + ".jpg");
+////        File image = File.createTempFile(imageFileName,".jpg",mGalleryFolder);
+//        fileUri = Uri.fromFile(image);
+//
+////        mImageFileLocation = image.getAbsolutePath();
+//        Toast.makeText(this, image.getPath(), Toast.LENGTH_LONG).show();
+//        return image;
+//    }
 
     @Override
     public void onBackPressed() {
@@ -177,7 +288,8 @@ public class UserProfileActivity extends AppCompatActivity
         switch (item.getItemId()){
             case R.id.action_settings:
                 try{
-
+                    mMediaStoreAdapter.notifyDataSetChanged();
+                    getSupportLoaderManager().restartLoader(MEDIASTORE_LOADER_ID,null,this);
                     Toast.makeText(this,"this is a settings menu", Toast.LENGTH_SHORT).show();
                 }catch(android.content.ActivityNotFoundException anfe){
                 }
@@ -276,5 +388,33 @@ public class UserProfileActivity extends AppCompatActivity
         Intent videoPlayIntent = new Intent(this, VideoPlayActivity.class);
         videoPlayIntent.setData(videoUri);
         startActivity(videoPlayIntent);
+    }
+
+//    @Override
+//    protected void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//
+//        outState.putParcelable("file_uri", fileUri);
+//    }
+//
+//    @Override
+//    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+//        super.onRestoreInstanceState(savedInstanceState);
+//
+//        //get the file url
+//        fileUri = savedInstanceState.getParcelable("file_uri");
+//    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("file_uri", fileUri);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        fileUri = savedInstanceState.getParcelable("file_uri");
     }
 }

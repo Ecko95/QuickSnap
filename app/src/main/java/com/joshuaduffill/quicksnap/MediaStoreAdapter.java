@@ -158,8 +158,8 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
             default:
         }
     }
-    public void refreshBlockOverlay(int position) {
-        notifyItemChanged(position);
-    }
+//    public void refreshBlockOverlay(int position) {
+//        notifyItemChanged(position);
+//    }
 
 }
