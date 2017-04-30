@@ -46,8 +46,11 @@ public class EditImageActivity extends AppCompatActivity {
 
     public void editPicture(View view){
 
-//        ImageProcessor imageProcessor = new ImageProcessor();
+        //open menu with edit filters
+        ImageProcessor imageProcessor = new ImageProcessor();
 //        imageProcessor.doInvert(editBitmap);
+        //add greyscale etc
+        //continue here
 
     }
 
