@@ -26,6 +26,9 @@
     <string name="action_settings">Settings</string>
     <string name="action_camera">Camera</string>
 
+    <string name="filter_greyscale">Greyscale</string>
+    <string name="filter_invert">Invert</string>
+
     <string name="title_activity_fullscreen_image">FullscreenImageActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
