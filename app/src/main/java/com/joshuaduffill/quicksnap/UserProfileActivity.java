@@ -378,6 +378,7 @@ public class UserProfileActivity extends AppCompatActivity
         //Toast.makeText(UserProfileActivity.this,"Image uri = " + imageUri.toString(), Toast.LENGTH_SHORT).show();
 
         //provides the location of calling activity & data of location of selected image
+
         Intent fullScreenIntent = new Intent(this, FullScreenImageActivity.class);
         fullScreenIntent.setData(imageUri);
         startActivity(fullScreenIntent);

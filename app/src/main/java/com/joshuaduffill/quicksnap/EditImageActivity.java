@@ -6,7 +6,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -52,7 +55,8 @@ public class EditImageActivity extends AppCompatActivity {
             Glide.with(this)
                     .load(intent.getParcelableExtra("URL"))
                     .asBitmap()
-                    .override(600,600)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .override(500,500)
                     .fitCenter()
                     .listener(new RequestListener<Parcelable, Bitmap>() {
                         @Override
@@ -74,6 +78,28 @@ public class EditImageActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Image is null", Toast.LENGTH_SHORT).show();
         }
+
+//        Intent callActivityIntent = getIntent();
+//        if(callActivityIntent != null){
+//            Uri imageUri = callActivityIntent.getData();
+//            if(imageUri != null && mPhotoCaptuedImageView != null){
+//                Glide.with(this)
+//                        .load(imageUri)
+//                        .listener(new RequestListener<Uri, GlideDrawable>() {
+//                            @Override
+//                            public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
+//                                mProgressBar.setVisibility(View.GONE);
+//                                return false;
+//                            }
+//                            @Override
+//                            public boolean onResourceReady(GlideDrawable resource, Uri model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+//                                mProgressBar.setVisibility(View.GONE);
+//                                return false;
+//                            }
+//                        })
+//                        .into(mPhotoCaptuedImageView);
+//            }
+//        }
 
 
 
@@ -111,7 +137,35 @@ public class EditImageActivity extends AppCompatActivity {
 //        mPhotoCaptuedImageView.setImageBitmap(imageProcessor.doGreyScale(mPhotoBitmap));
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item){
+
+        Thread greyScaleRendering = new Thread(){
+            @Override
+            public void run() {
+                try{
+                    //renders grayscale image
+                    ImageProcessor imageProcessor = new ImageProcessor();
+                    mPhotoCaptuedImageView.setImageBitmap(imageProcessor.doGreyScale(mPhotoBitmap));
+
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
+            }
+
+        };
+        Thread invertRendering = new Thread(){
+            @Override
+            public void run() {
+                try{
+                    //renders invert image
+                    ImageProcessor imageProcessor = new ImageProcessor();
+                    mPhotoCaptuedImageView.setImageBitmap(imageProcessor.doInvert(mPhotoBitmap));
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
+            }
+        };
+
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -123,8 +177,12 @@ public class EditImageActivity extends AppCompatActivity {
 //                    mPhotoBitmap= ((GlideBitmapDrawable)mPhotoCaptuedImageView.getDrawable().getCurrent()).getBitmap();
 
                     Toast.makeText(this,"this is greyscale", Toast.LENGTH_SHORT).show();
-                    ImageProcessor imageProcessor = new ImageProcessor();
-                    mPhotoCaptuedImageView.setImageBitmap(imageProcessor.doGreyScale(mPhotoBitmap));
+
+                    greyScaleRendering.start();
+//                    ImageProcessor imageProcessor = new ImageProcessor();
+//                    mPhotoCaptuedImageView.setImageBitmap(imageProcessor.doGreyScale(mPhotoBitmap));
+
+
                 }catch(android.content.ActivityNotFoundException anfe){
 
                 }
@@ -133,8 +191,9 @@ public class EditImageActivity extends AppCompatActivity {
                 try{
                     mPhotoBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
 //                    mPhotoBitmap= ((GlideBitmapDrawable)mPhotoCaptuedImageView.getDrawable().getCurrent()).getBitmap();
-                    ImageProcessor imageProcessor = new ImageProcessor();
-                    mPhotoCaptuedImageView.setImageBitmap(imageProcessor.doInvert(mPhotoBitmap));
+                    invertRendering.start();
+//                    ImageProcessor imageProcessor = new ImageProcessor();
+//                    mPhotoCaptuedImageView.setImageBitmap(imageProcessor.doInvert(mPhotoBitmap));
                 }catch(android.content.ActivityNotFoundException anfe){
 
                 }
