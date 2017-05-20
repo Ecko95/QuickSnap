@@ -17,6 +17,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -41,12 +43,16 @@ public class EditImageActivity extends AppCompatActivity {
     private Bitmap mPhotoBitmap;
     private Bitmap mEditOperation;
     private ProgressBar mProgressBar;
+    private HorizontalScrollView mfilterView;
+    private ImageButton mButtonFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_image);
 
+        mButtonFilter = (ImageButton) findViewById(R.id.btn_filters);
+        mfilterView = (HorizontalScrollView) findViewById(R.id.filterScrollView);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBarImage);
         mPhotoCaptuedImageView = (ImageView) findViewById(R.id.editImageView);
         Intent intent = getIntent();
@@ -72,11 +78,31 @@ public class EditImageActivity extends AppCompatActivity {
                         }
                     })
                     .into(mPhotoCaptuedImageView);
-
 //
 
         } else {
-            Toast.makeText(this, "Image is null", Toast.LENGTH_SHORT).show();
+            Intent callActivityIntent = getIntent();
+            Uri imageUri = callActivityIntent.getData();
+            if(imageUri != null && mPhotoCaptuedImageView != null) {
+                Glide.with(this)
+                        .load(imageUri)
+                        .asBitmap()
+                        .skipMemoryCache(true)
+                        .listener(new RequestListener<Uri, Bitmap>() {
+                            @Override
+                            public boolean onException(Exception e, Uri model, Target<Bitmap> target, boolean isFirstResource) {
+                                mProgressBar.setVisibility(View.GONE);
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Bitmap resource, Uri model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                mProgressBar.setVisibility(View.GONE);
+                                return false;
+                            }
+                        })
+                        .into(mPhotoCaptuedImageView);
+            }
         }
 
 //        Intent callActivityIntent = getIntent();
@@ -105,66 +131,64 @@ public class EditImageActivity extends AppCompatActivity {
 
     }
 
-
-    public void editPicture(View view){
-
-//        mPhotoBitmap= ((GlideBitmapDrawable)mPhotoCaptuedImageView.getDrawable().getCurrent()).getBitmap();
-
-//        ImageProcessor imageProcessor = new ImageProcessor();
-//        imageProcessor.doGreyScale(mPhotoBitmap);
-
-//        mPhotoBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
-
-//        mEditOperation = Bitmap.createBitmap(mPhotoBitmap.getWidth(),mPhotoBitmap.getHeight(), mPhotoBitmap.getConfig());
-//        double red = 0.33;
-//        double green = 0.59;
-//        double blue = 0.11;
-//
-//        for (int i = 0; i < mPhotoBitmap.getWidth(); i++) {
-//            for (int j = 0; j < mPhotoBitmap.getHeight(); j++) {
-//                int p = mPhotoBitmap.getPixel(i, j);
-//                int r = Color.red(p);
-//                int g = Color.green(p);
-//                int b = Color.blue(p);
-//
-//                r = (int) red * r;
-//                g = (int) green * g;
-//                b = (int) blue * b;
-//                mEditOperation.setPixel(i, j, Color.argb(Color.alpha(p), r, g, b));
-//            }
-//        }
-
-//        mPhotoCaptuedImageView.setImageBitmap(imageProcessor.doGreyScale(mPhotoBitmap));
+    public void openFilters(View view){
+        mfilterView.setVisibility(View.VISIBLE);
+        mButtonFilter.setVisibility(View.GONE);
     }
+
+    public void cancelProcess(View view){
+        mfilterView.setVisibility(View.GONE);
+        mButtonFilter.setVisibility(View.VISIBLE);
+        finish();
+
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus){
+        super.onWindowFocusChanged(hasFocus);
+        View decorView = getWindow().getDecorView();
+        if(hasFocus){
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+//            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//            | View.SYSTEM_UI_FLAG_FULLSCREEN
+//            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN);
+        }
+
+    }
+
+    Thread greyScaleRendering = new Thread(){
+        @Override
+        public void run() {
+            try{
+                //renders grayscale image
+                ImageProcessor imageProcessor = new ImageProcessor();
+                mPhotoCaptuedImageView.setImageBitmap(imageProcessor.doGreyScale(mPhotoBitmap));
+
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+        }
+
+    };
+    Thread invertRendering = new Thread(){
+        @Override
+        public void run() {
+            try{
+                //renders invert image
+                ImageProcessor imageProcessor = new ImageProcessor();
+                mPhotoCaptuedImageView.setImageBitmap(imageProcessor.doInvert(mPhotoBitmap));
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+        }
+    };
 
     public boolean onOptionsItemSelected(MenuItem item){
 
-        Thread greyScaleRendering = new Thread(){
-            @Override
-            public void run() {
-                try{
-                    //renders grayscale image
-                    ImageProcessor imageProcessor = new ImageProcessor();
-                    mPhotoCaptuedImageView.setImageBitmap(imageProcessor.doGreyScale(mPhotoBitmap));
-
-                }catch (Exception ex){
-                    ex.printStackTrace();
-                }
-            }
-
-        };
-        Thread invertRendering = new Thread(){
-            @Override
-            public void run() {
-                try{
-                    //renders invert image
-                    ImageProcessor imageProcessor = new ImageProcessor();
-                    mPhotoCaptuedImageView.setImageBitmap(imageProcessor.doInvert(mPhotoBitmap));
-                }catch (Exception ex){
-                    ex.printStackTrace();
-                }
-            }
-        };
 
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -208,6 +232,31 @@ public class EditImageActivity extends AppCompatActivity {
 //        }
 //
 //        return super.onOptionsItemSelected(item);
+    }
+
+    public void greyscaleFilter(View view){
+        try {
+            mPhotoBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
+            greyScaleRendering.start();
+            //join method waits for the thread to finish, then refresh ********Adds lag********* needs loader
+            greyScaleRendering.join();
+            Toast.makeText(this,"this is greyscale", Toast.LENGTH_SHORT).show();
+
+        }catch (InterruptedException e){
+
+        }
+    }
+
+    public void invertFilter(View view){
+        try {
+            mPhotoBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
+            invertRendering.start();
+            invertRendering.join();
+            Toast.makeText(this,"this is invert", Toast.LENGTH_SHORT).show();
+        }catch (InterruptedException e){
+
+        }
+
     }
 
     @Override

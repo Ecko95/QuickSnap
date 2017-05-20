@@ -1,12 +1,15 @@
 package com.joshuaduffill.quicksnap;
 
 import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -23,6 +26,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.provider.DocumentFile;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -113,7 +117,6 @@ public class UserProfileActivity extends AppCompatActivity
         mMediaStoreAdapter = new MediaStoreAdapter(this);
         mThumbailRecyclerView.setAdapter(mMediaStoreAdapter);
 
-
         mThumbailRecyclerView.setHasFixedSize(true);
         mThumbailRecyclerView.setItemViewCacheSize(20);
         mThumbailRecyclerView.setDrawingCacheEnabled(true);
@@ -136,11 +139,14 @@ public class UserProfileActivity extends AppCompatActivity
                 File photoFile = null;
                 try{
                     photoFile = createImageFile();
-                    fileUri = FileProvider.getUriForFile(UserProfileActivity.this, getApplicationContext().getPackageName() + ".share",
-                            createImageFile());
+//                    fileUri = FileProvider.getUriForFile(UserProfileActivity.this, getApplicationContext().getPackageName() + ".fileprovider",
+//                            createImageFile());
                 }catch(IOException e){
                     e.printStackTrace();
                 }
+
+                String authorities = getApplicationContext().getPackageName() + ".fileprovider";
+                fileUri = FileProvider.getUriForFile(getApplicationContext(), authorities, photoFile);
 
                 callCameraAppIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 
@@ -201,7 +207,7 @@ public class UserProfileActivity extends AppCompatActivity
 
 
 
-            //assign photo to image view on edit imagea ctivity
+            //assign photo to image view on edit image activity
             Intent editPhotoIntent = new Intent(this, EditImageActivity.class);
             editPhotoIntent.putExtra("URL", fileUri);
 
@@ -212,8 +218,34 @@ public class UserProfileActivity extends AppCompatActivity
             //refreshes the recycler view (list of images)
             getSupportLoaderManager().restartLoader(MEDIASTORE_LOADER_ID,null,this);
 
-        }
+//            Intent mediaScanIntent = new Intent (Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+//            sendBroadcast(mediaScanIntent);
 
+            MediaScannerConnection.scanFile(
+                    getApplicationContext(),
+                    new String[]{mImageFileLocation},
+                    null,
+                    new MediaScannerConnection.OnScanCompletedListener() {
+                        @Override
+                        public void onScanCompleted(String path, Uri uri) {
+                            Log.v("Joshuaduffill",
+                                    "file" + path + "was scanned successfully: " + uri);
+                        }
+                    }
+
+            );
+
+
+
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        getSupportLoaderManager().initLoader(MEDIASTORE_LOADER_ID,null,this);
+        getSupportLoaderManager().restartLoader(MEDIASTORE_LOADER_ID,null,this);
+        //run on background
     }
 
     private void createImageGallery(){
@@ -242,10 +274,13 @@ public class UserProfileActivity extends AppCompatActivity
 
 
 //        File image = File.createTempFile(imageFileName,".jpg",storageDirectory);
+//        File image = new File(storageDirectory + File.separator + imageFileName + ".jpg");
         File image = new File(storageDirectory + File.separator + imageFileName + ".jpg");
+//        fileUri = Uri.fromFile(image);
 
-        mMediaStoreAdapter.notifyDataSetChanged();
+
         mImageFileLocation = image.getAbsolutePath();
+        mMediaStoreAdapter.notifyDataSetChanged();
         return image;
     }
 
@@ -290,7 +325,7 @@ public class UserProfileActivity extends AppCompatActivity
                 try{
                     mMediaStoreAdapter.notifyDataSetChanged();
                     getSupportLoaderManager().restartLoader(MEDIASTORE_LOADER_ID,null,this);
-                    Toast.makeText(this,"this is a settings menu", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,"refresh", Toast.LENGTH_SHORT).show();
                 }catch(android.content.ActivityNotFoundException anfe){
                 }
                 return true;
@@ -313,21 +348,20 @@ public class UserProfileActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            Intent callCameraApp = new Intent();
-            callCameraApp.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityForResult(callCameraApp, ACTIVITY_START_CAMERA_APP);
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_favourites) {
+//            Intent callCameraApp = new Intent();
+//            callCameraApp.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+//            startActivityForResult(callCameraApp, ACTIVITY_START_CAMERA_APP);
 
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_rate_us) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_about) {
 
-        } else if (id == R.id.nav_logOut){
+        } else if (id == R.id.nav_log_out){
             firebaseAuth.signOut();
             finish();
             startActivity(new Intent(getApplicationContext(), MainActivity.class));
@@ -338,8 +372,6 @@ public class UserProfileActivity extends AppCompatActivity
         return true;
     }
 
-
-    //continue here
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String[] projection = {
@@ -379,7 +411,13 @@ public class UserProfileActivity extends AppCompatActivity
 
         //provides the location of calling activity & data of location of selected image
 
-        Intent fullScreenIntent = new Intent(this, FullScreenImageActivity.class);
+        //opens image in full activity
+//        Intent fullScreenIntent = new Intent(this, FullScreenImageActivity.class);
+//        fullScreenIntent.setData(imageUri);
+//        startActivity(fullScreenIntent);
+
+        //opens image in editimage activity
+        Intent fullScreenIntent = new Intent(this, EditImageActivity.class);
         fullScreenIntent.setData(imageUri);
         startActivity(fullScreenIntent);
     }
@@ -390,21 +428,6 @@ public class UserProfileActivity extends AppCompatActivity
         videoPlayIntent.setData(videoUri);
         startActivity(videoPlayIntent);
     }
-
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//
-//        outState.putParcelable("file_uri", fileUri);
-//    }
-//
-//    @Override
-//    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-//        super.onRestoreInstanceState(savedInstanceState);
-//
-//        //get the file url
-//        fileUri = savedInstanceState.getParcelable("file_uri");
-//    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
