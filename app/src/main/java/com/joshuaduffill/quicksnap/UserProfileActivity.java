@@ -27,6 +27,7 @@ import android.support.v4.provider.DocumentFile;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -338,7 +339,6 @@ public class UserProfileActivity extends AppCompatActivity
 //        if (id == R.id.action_settings) {
 //            return true;
 //        }
-//
 //        return super.onOptionsItemSelected(item);
     }
 
@@ -353,7 +353,7 @@ public class UserProfileActivity extends AppCompatActivity
 //            callCameraApp.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
 //            startActivityForResult(callCameraApp, ACTIVITY_START_CAMERA_APP);
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_manage) {
 
