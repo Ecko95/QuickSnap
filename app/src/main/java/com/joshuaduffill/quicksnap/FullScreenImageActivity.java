@@ -1,24 +1,16 @@
 package com.joshuaduffill.quicksnap;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
-import android.os.Process;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -28,16 +20,16 @@ import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.google.android.gms.tasks.Tasks;
 import com.mukesh.image_processing.ImageProcessor;
 
-import java.util.concurrent.ThreadPoolExecutor;
+import java.io.File;
 
 public class FullScreenImageActivity extends AppCompatActivity {
 
     private ImageView fullScreenImageView;
     private ProgressBar mProgressBar;
     private Bitmap mPhotoBitmap;
+    private Uri fileUri;
 
     // An object that manages Messages in a Thread
     private Handler mHandler;
@@ -54,10 +46,10 @@ public class FullScreenImageActivity extends AppCompatActivity {
         Intent callActivityIntent = getIntent();
         if(callActivityIntent != null){
             Uri imageUri = callActivityIntent.getData();
+            fileUri = imageUri;
             if(imageUri != null && fullScreenImageView != null){
                 Glide.with(this)
                         .load(imageUri)
-                        .skipMemoryCache( true )
                         .listener(new RequestListener<Uri, GlideDrawable>() {
                             @Override
                             public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -71,8 +63,11 @@ public class FullScreenImageActivity extends AppCompatActivity {
                             }
                         })
                         .into(fullScreenImageView);
+                Toast.makeText(this, imageUri.getPath(), Toast.LENGTH_SHORT).show();
             }
         }
+
+
     }
 
     @Override
@@ -92,7 +87,17 @@ public class FullScreenImageActivity extends AppCompatActivity {
 
     }
 
+    Thread clearCache = new Thread(){
+        @Override
+        public void run() {
+            try{
+                Glide.get(getApplicationContext()).clearDiskCache();
 
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+        }
+    };
 
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -101,41 +106,41 @@ public class FullScreenImageActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
 //        int id = item.getItemId();
         switch (item.getItemId()){
-            case R.id.filter_greyscale:
+            case R.id.option_delete:
                 try{
-//                    mPhotoBitmap = ((BitmapDrawable)fullScreenImageView.getDrawable()).getBitmap();
-                    mPhotoBitmap= ((GlideBitmapDrawable)fullScreenImageView.getDrawable().getCurrent()).getBitmap();
-//                    mPhotoBitmap= ((GlideBitmapDrawable)fullScreenImageView.getDrawable().getCurrent()).getBitmap();
-                    Toast.makeText(this,"rendering greyscale", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,"deleted", Toast.LENGTH_SHORT).show();
 
-                    ImageProcessor imageProcessor = new ImageProcessor();
-                    fullScreenImageView.setImageBitmap(imageProcessor.doGreyScale(mPhotoBitmap));
-                }catch(android.content.ActivityNotFoundException anfe){
+                    //not working
+//                    new File (fileUri.getPath()).getAbsoluteFile().delete();
+//                    File file = new File(fileUri.getPath());
+//                    file.delete();
+//                    if(file.exists()){
+//                        file.getCanonicalFile().delete();
+//                        if(file.exists()){
+//                            getApplicationContext().deleteFile(file.getName());
+//                        }
+//                    }
+                    clearCache.start();
+
+                }catch(Exception ex){
 
                 }
                 return true;
-            case R.id.filter_invert:
+            case R.id.option_edit:
                 try{
-//                    mPhotoBitmap = ((BitmapDrawable)fullScreenImageView.getDrawable()).getBitmap();
-                    mPhotoBitmap= ((GlideBitmapDrawable)fullScreenImageView.getDrawable().getCurrent()).getBitmap();
-                    Toast.makeText(this,"rendering invert", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,"open editor", Toast.LENGTH_SHORT).show();
 
-                    ImageProcessor imageProcessor = new ImageProcessor();
-                    fullScreenImageView.setImageBitmap(imageProcessor.doInvert(mPhotoBitmap));
-                }catch(android.content.ActivityNotFoundException anfe){
+                    Intent editImageIntent = new Intent(this, EditImageActivity.class);
+                    editImageIntent.setData(fileUri);
+                    startActivity(editImageIntent);
+
+                }catch(Exception ex){
 
                 }
                 //add more here
             default:
                 return super.onOptionsItemSelected(item);
         }
-
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
     }
 
     // https://developer.android.com/training/multiple-threads/define-runnable.html
@@ -156,31 +161,9 @@ public class FullScreenImageActivity extends AppCompatActivity {
 //        }
 //    };
 
-
-    public class Rendering implements Runnable{
-        @Override
-        public void run() {
-            //moves the current Thread into the background
-            android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-
-//            mHandler = new Handler(Looper.getMainLooper()) {
-//                @Override
-//                public void handleMessage(Message msg) {
-//
-//                    PhotoTask photoTask = (PhotoTask) inputMessage.obj;
-//                    super.handleMessage(msg);
-//                }
-//            };
-
-            //renders grayscale image
-            ImageProcessor imageProcessor = new ImageProcessor();
-            fullScreenImageView.setImageBitmap(imageProcessor.doGreyScale(mPhotoBitmap));
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.filters, menu);
+        getMenuInflater().inflate(R.menu.context, menu);
         return true;
     }
 

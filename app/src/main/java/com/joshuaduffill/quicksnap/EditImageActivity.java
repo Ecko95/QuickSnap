@@ -1,68 +1,61 @@
 package com.joshuaduffill.quicksnap;
 
-import android.app.ProgressDialog;
-import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Parcelable;
 import android.os.Process;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.mukesh.image_processing.ImageProcessor;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static android.graphics.Bitmap.CompressFormat.PNG;
-import static java.lang.System.out;
-
 public class EditImageActivity extends AppCompatActivity {
 
     private ImageView mPhotoCaptuedImageView;
-    private Bitmap mPhotoBitmap;
     private Bitmap mEditedBitmap;
-    private Bitmap mEditOperation;
+
     private Bitmap mOriginalBitmap;
+    private Bitmap mGreyscaleBitmap;
+    private Bitmap mInvertBitmap;
+
     private ProgressBar mProgressBar;
     private ProgressBar mRenderingBar;
     private HorizontalScrollView mfilterView;
     private ImageButton mButtonFilter;
     private Button mCancelButton;
+    private ImageButton btnGreyscale;
+    private ImageButton btnInvert;
+    private ImageButton btnNormal;
 
-    private int progressBarStatus = 0;
+    private File editedImage;
+
+    private Uri fileUri;
+
+    private String GALLERY_DIRECTORY_NAME = "QuickSnap";
+    private File mGalleryFolder;
+
     private Handler progressBarbHandler = new Handler();
 
     @Override
@@ -70,6 +63,10 @@ public class EditImageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_image);
 
+
+        btnNormal = (ImageButton) findViewById(R.id.btn_normal);
+        btnInvert = (ImageButton) findViewById(R.id.btn_invert);
+        btnGreyscale = (ImageButton) findViewById(R.id.btn_greyscale);
         mButtonFilter = (ImageButton) findViewById(R.id.btn_filters);
         mfilterView = (HorizontalScrollView) findViewById(R.id.filterScrollView);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBarImage);
@@ -77,70 +74,107 @@ public class EditImageActivity extends AppCompatActivity {
         mPhotoCaptuedImageView = (ImageView) findViewById(R.id.editImageView);
         mCancelButton = (Button) findViewById(R.id.btn_cancel);
 
-        Intent intent = getIntent();
-        Uri imageUri = intent.getParcelableExtra("URL");
-        if (getIntent().getExtras() != null) {
+//        Intent intent = getIntent();
+//        Uri imageUri = intent.getParcelableExtra("URL");
+        createImageGallery();
+
+        Intent callActivityIntent = getIntent();
+        if (callActivityIntent != null) {
+           fileUri = callActivityIntent.getData();
             Glide.with(this)
-                    .load(imageUri)
+                    .load(fileUri)
                     .asBitmap()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .override(1920,1080)
+//                    .override(1280,720)
+                    .skipMemoryCache( true )
                     .fitCenter()
-                    .listener(new RequestListener<Parcelable, Bitmap>() {
+                    .listener(new RequestListener<Uri, Bitmap>() {
                         @Override
-                        public boolean onException(Exception e, Parcelable model, Target<Bitmap> target, boolean isFirstResource) {
+                        public boolean onException(Exception e, Uri model, Target<Bitmap> target, boolean isFirstResource) {
                             mProgressBar.setVisibility(View.GONE);
                             return false;
                         }
 
                         @Override
-                        public boolean onResourceReady(Bitmap resource, Parcelable model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        public boolean onResourceReady(Bitmap resource, Uri model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             mProgressBar.setVisibility(View.GONE);
                             mOriginalBitmap = resource;
                             return false;
                         }
                     })
+
                     .into(mPhotoCaptuedImageView);
-                    Toast.makeText(this, "Original Image saved", Toast.LENGTH_SHORT).show();
-        } else {
-            Intent callActivityIntent = getIntent();
-            Uri imageUri2 = callActivityIntent.getData();
-            if(imageUri2 != null && mPhotoCaptuedImageView != null) {
-                Glide.with(this)
-                        .load(imageUri2)
-                        .asBitmap()
-                        .override(1920,1080)
-                        .skipMemoryCache(true)
-                        .listener(new RequestListener<Uri, Bitmap>() {
-                            @Override
-                            public boolean onException(Exception e, Uri model, Target<Bitmap> target, boolean isFirstResource) {
-                                mProgressBar.setVisibility(View.GONE);
-                                return false;
-                            }
+                    Toast.makeText(this, "Original Image saved - from camera", Toast.LENGTH_SHORT).show();
+//            .into(new SimpleTarget<Bitmap>(600,600) {
+////                @Override
+////                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+////                    mPhotoCaptuedImageView.setImageBitmap(resource);
+////                    mOriginalBitmap = resource;
+////                }
+////            });
+        }
 
-                            @Override
-                            public boolean onResourceReady(Bitmap resource, Uri model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                                mProgressBar.setVisibility(View.GONE);
-                                //stores the original image
-                                mOriginalBitmap = resource;
-                                return false;
-                            }
-                        })
-                        .into(mPhotoCaptuedImageView);
-                        Toast.makeText(this, "Original Image saved", Toast.LENGTH_SHORT).show();
-            }
-//            try{
-////                mOriginalBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-//                mOriginalBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri2);
-//                Toast.makeText(this, "Original Image saved", Toast.LENGTH_SHORT).show();
-//
-//            }catch(IOException ex){
-//                Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
-//            }
+    }
 
+    private void createImageGallery(){
+        mGalleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), GALLERY_DIRECTORY_NAME);
+//        File mGalleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), GALLERY_DIRECTORY_NAME);
+        Toast.makeText(this, mGalleryFolder.toString(), Toast.LENGTH_LONG).show();
+        //does PICTURES directory exist?
+        if(!mGalleryFolder.exists()){
+            mGalleryFolder.mkdirs();
 
         }
     }
+
+    public void saveEditedImage(View view){
+        try{
+            File photoFile = null;
+            photoFile = saveImage();
+
+            MediaScannerConnection.scanFile(
+                    getApplicationContext(),
+                    new String[]{photoFile.getAbsolutePath()},
+                    null,
+                    new MediaScannerConnection.OnScanCompletedListener() {
+                        @Override
+                        public void onScanCompleted(String path, Uri uri) {
+                            Log.v("Joshuaduffill",
+                                    "file" + path + "was scanned successfully: " + uri);
+                        }
+                    }
+
+            );
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+
+
+    private File saveImage() throws IOException{
+
+
+        mEditedBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
+        if (mEditedBitmap == null){
+            Toast.makeText(this, "No picture found", Toast.LENGTH_SHORT).show();
+        }
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "EDIT_IMAGE_" + timeStamp + "_";
+        File storageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File editedImage = new File(mGalleryFolder + File.separator + imageFileName + ".jpg");
+        FileOutputStream fos = new FileOutputStream(editedImage);
+
+        mEditedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+
+        fos.flush();
+        fos.close();
+
+        Toast.makeText(this, "Image Saved Successfully", Toast.LENGTH_SHORT).show();
+        return editedImage;
+    }
+
+
     public void finishRendering(){
         Toast.makeText(EditImageActivity.this, "Done!", Toast.LENGTH_SHORT).show();
         mRenderingBar.setVisibility(View.GONE);
@@ -189,10 +223,6 @@ public class EditImageActivity extends AppCompatActivity {
 
     }
 
-
-
-
-
     Thread greyScaleRendering = new Thread(){
 
         @Override
@@ -205,23 +235,36 @@ public class EditImageActivity extends AppCompatActivity {
                 }
             });
 
-            try{
+            if(mGreyscaleBitmap != null){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPhotoCaptuedImageView.setImageBitmap(mGreyscaleBitmap);
+                        finishRendering();
+                    }
+                });
 
-                ImageProcessor imageProcessor = new ImageProcessor();
-                mEditedBitmap = imageProcessor.doGreyScale(mPhotoBitmap);
+            }else{
+                try{
 
-            }catch (Exception ex){
-                ex.printStackTrace();
-            }
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
+                    ImageProcessor imageProcessor = new ImageProcessor();
+                    mEditedBitmap = imageProcessor.doGreyScale(mOriginalBitmap);
 
-                    mPhotoCaptuedImageView.setImageBitmap(mEditedBitmap);
-
-                    finishRendering();
+                }catch (Exception ex){
+                    ex.printStackTrace();
                 }
-            });
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        mPhotoCaptuedImageView.setImageBitmap(mEditedBitmap);
+                        mGreyscaleBitmap = mEditedBitmap;
+
+                        finishRendering();
+                    }
+                });
+            }
+
         }
 
     };
@@ -236,20 +279,35 @@ public class EditImageActivity extends AppCompatActivity {
                     mRenderingBar.setVisibility(View.VISIBLE);
                 }
             });
-            try{
-                //renders invert image
-                ImageProcessor imageProcessor = new ImageProcessor();
-                mEditedBitmap = imageProcessor.doInvert(mPhotoBitmap);
-            }catch (Exception ex){
-                ex.printStackTrace();
+
+            if(mInvertBitmap != null) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPhotoCaptuedImageView.setImageBitmap(mInvertBitmap);
+                        finishRendering();
+                    }
+                });
             }
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mPhotoCaptuedImageView.setImageBitmap(mEditedBitmap);
-                    finishRendering();
+            else{
+                try{
+                    //renders invert image
+                    ImageProcessor imageProcessor = new ImageProcessor();
+                    mEditedBitmap = imageProcessor.applyHueFilter(mOriginalBitmap,100);
+                }catch (Exception ex){
+                    ex.printStackTrace();
                 }
-            });
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPhotoCaptuedImageView.setImageBitmap(mEditedBitmap);
+                        mInvertBitmap = mEditedBitmap;
+
+                        finishRendering();
+                    }
+                });
+            }
+
         }
     };
 
@@ -265,9 +323,9 @@ public class EditImageActivity extends AppCompatActivity {
             });
             try{
                 //renders normal image
+//                mOriginalBitmap.compress(JPEG, 10, out);
+//                mOriginalBitmap.compress(JPEG, 50, out);
 
-//                mOriginalBitmap.compress(PNG, 50, out);
-                mEditedBitmap = mOriginalBitmap;
 
 
             }catch (Exception ex){
@@ -276,103 +334,28 @@ public class EditImageActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mPhotoCaptuedImageView.setImageBitmap(mEditedBitmap);
+                    mPhotoCaptuedImageView.setImageBitmap(mOriginalBitmap);
                     finishRendering();
                 }
             });
         }
     };
 
-
-    public boolean onOptionsItemSelected(MenuItem item){
-
-
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-        switch (item.getItemId()){
-            case R.id.filter_greyscale:
-                try{
-                    mPhotoBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
-//                    mPhotoBitmap= ((GlideBitmapDrawable)mPhotoCaptuedImageView.getDrawable().getCurrent()).getBitmap();
-
-                    Toast.makeText(this,"this is greyscale", Toast.LENGTH_SHORT).show();
-
-                    greyScaleRendering.start();
-//                    ImageProcessor imageProcessor = new ImageProcessor();
-//                    mPhotoCaptuedImageView.setImageBitmap(imageProcessor.doGreyScale(mPhotoBitmap));
-
-
-                }catch(android.content.ActivityNotFoundException anfe){
-
-                }
-                return true;
-            case R.id.filter_invert:
-                try{
-                    mPhotoBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
-//                    mPhotoBitmap= ((GlideBitmapDrawable)mPhotoCaptuedImageView.getDrawable().getCurrent()).getBitmap();
-                    invertRendering.start();
-//                    ImageProcessor imageProcessor = new ImageProcessor();
-//                    mPhotoCaptuedImageView.setImageBitmap(imageProcessor.doInvert(mPhotoBitmap));
-                }catch(android.content.ActivityNotFoundException anfe){
-
-                }
-            //add more here
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-    }
-
-    public void greyscaleFilter(View view){
-
-
-//        try {
-            mPhotoBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
-            greyScaleRendering.start();
-            //join method waits for the thread to finish, then refresh ********Adds lag********* needs loader
-//            greyScaleRendering.join();
-            Toast.makeText(this,"this is greyscale", Toast.LENGTH_SHORT).show();
-
-//        }catch (InterruptedException e){
-//
-//        }
-    }
-
-    public void invertFilter(View view){
-//        try {
-            mPhotoBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
-            invertRendering.start();
-//            invertRendering.join();
-            Toast.makeText(this,"this is invert", Toast.LENGTH_SHORT).show();
-//        }catch (InterruptedException e){
-//
-//        }
-
-    }
-
-    public void normalFilter (View view){
-//        try {
-        mPhotoBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
+    public void btn_normal_filter(View view){
         normalRendering.start();
-//            invertRendering.join();
-        Toast.makeText(this,"This is the Original", Toast.LENGTH_SHORT).show();
-//        }catch (InterruptedException e){
-//
-//        }
-
     }
+    public void btn_greyscale_filter(View view){
+        greyScaleRendering.start();
+    }
+    public void btn_invert_filter(View view){
+        invertRendering.start();
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.filters, menu);
+        getMenuInflater().inflate(R.menu.context, menu);
         return true;
     }
 }

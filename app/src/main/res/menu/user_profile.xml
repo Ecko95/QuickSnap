@@ -3,10 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_camera"
-        android:icon="@drawable/ic_menu_camera"
+        android:icon="@drawable/ic_photo_camera_white_24dp"
         android:title="@string/action_camera"
-        android:fillColor="#fff"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"

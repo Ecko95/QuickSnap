@@ -54,6 +54,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static android.R.attr.id;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static com.joshuaduffill.quicksnap.R.id.cameraFab;
+
 public class UserProfileActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor>,
         MediaStoreAdapter.OnClickThumbnailListener{
@@ -70,6 +75,8 @@ public class UserProfileActivity extends AppCompatActivity
     private View mHeaderView;
     private TextView mDrawerHeaderTitle;
 
+    private FloatingActionButton mCameraFab;
+
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     RecyclerView.Adapter adapter;
@@ -78,6 +85,7 @@ public class UserProfileActivity extends AppCompatActivity
     private String GALLERY_DIRECTORY_NAME = "QuickSnap";
     private File mGalleryFolder;
     private Uri fileUri;
+
 
 
     @Override
@@ -102,21 +110,33 @@ public class UserProfileActivity extends AppCompatActivity
 
         FirebaseUser user = firebaseAuth.getCurrentUser();
 
+        final FloatingActionButton mCameraFab = (FloatingActionButton) findViewById(R.id.cameraFab);
+
         //displays NAV header subTitle to logged in user's email
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View mHeaderView = navigationView.getHeaderView(0);
         TextView companyNameTxt = (TextView) mHeaderView.findViewById(R.id.txtProfileEmail);
+
         companyNameTxt.setText(user.getEmail());
+
+
+
+
+
 
 //        checkReadExternalStoragePermission();
 
         //sets number og columns
         mThumbailRecyclerView = (RecyclerView) findViewById(R.id.thumbnailRecyclerView);
+
+
+        //sets the number of columns on gird layout
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this,3);
         mThumbailRecyclerView.setLayoutManager(gridLayoutManager);
 
         mMediaStoreAdapter = new MediaStoreAdapter(this);
         mThumbailRecyclerView.setAdapter(mMediaStoreAdapter);
+
 
         mThumbailRecyclerView.setHasFixedSize(true);
         mThumbailRecyclerView.setItemViewCacheSize(20);
@@ -126,56 +146,62 @@ public class UserProfileActivity extends AppCompatActivity
         //initialise Load of RECYCLER VIEW
         getSupportLoaderManager().initLoader(MEDIASTORE_LOADER_ID, null, this);
 
-
-
-        FloatingActionButton cameraFab = (FloatingActionButton) findViewById(R.id.cameraFab);
-        cameraFab.setOnClickListener(new View.OnClickListener() {
+        mThumbailRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onClick(View view) {
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
 
-                //opens camera app
-                Intent callCameraAppIntent = new Intent();
-                callCameraAppIntent.setAction(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-
-                File photoFile = null;
-                try{
-                    photoFile = createImageFile();
-//                    fileUri = FileProvider.getUriForFile(UserProfileActivity.this, getApplicationContext().getPackageName() + ".fileprovider",
-//                            createImageFile());
-                }catch(IOException e){
-                    e.printStackTrace();
+                if (newState == RecyclerView.SCROLL_STATE_IDLE)
+                {
+                    mCameraFab.show();
                 }
 
-                String authorities = getApplicationContext().getPackageName() + ".fileprovider";
-                fileUri = FileProvider.getUriForFile(getApplicationContext(), authorities, photoFile);
+                super.onScrollStateChanged(recyclerView, newState);
+            }
 
-                callCameraAppIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
-                startActivityForResult(callCameraAppIntent, ACTIVITY_START_CAMERA_APP);
 
-                //opens camera app
-//                Intent callCameraApp = new Intent();
-//                callCameraApp.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-//                callCameraApp.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-//                startActivityForResult(callCameraApp, ACTIVITY_START_CAMERA_APP);
+                if (dy > 0 ||dy<0 && mCameraFab.isShown())
+                {
+                    mCameraFab.hide();
+                }
 
-//                Intent callCameraApp = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-//                try{
-//                    fileUri = Uri.fromFile(CreateImageFile2());
-//                }catch (IOException e){
+
+            }
+        });
+
+
+        mCameraFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            mThumbailRecyclerView.getLayoutManager().smoothScrollToPosition(mThumbailRecyclerView,null,0);
+
+//                //opens camera app
+//                Intent callCameraAppIntent = new Intent();
+//                callCameraAppIntent.setAction(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 //
+//                File photoFile = null;
+//                try{
+//                    photoFile = createImageFile();
+////                    fileUri = FileProvider.getUriForFile(UserProfileActivity.this, getApplicationContext().getPackageName() + ".fileprovider",
+////                            createImageFile());
+//                }catch(IOException e){
+//                    e.printStackTrace();
 //                }
-//                callCameraApp.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-//                //stored the image and get the URI
-//                startActivityForResult(callCameraApp, ACTIVITY_START_CAMERA_APP);
-
+//
+//                String authorities = getApplicationContext().getPackageName() + ".fileprovider";
+//                fileUri = FileProvider.getUriForFile(getApplicationContext(), authorities, photoFile);
+//
+//                callCameraAppIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+//
+//                startActivityForResult(callCameraAppIntent, ACTIVITY_START_CAMERA_APP);
 
 
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
             }
         });
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -186,6 +212,8 @@ public class UserProfileActivity extends AppCompatActivity
         NavigationView mNavigation = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
+
+
 
     //continue here
 
@@ -207,13 +235,16 @@ public class UserProfileActivity extends AppCompatActivity
 //
 
 
+            Intent editScreenIntent = new Intent(this, EditImageActivity.class);
+            editScreenIntent.setData(fileUri);
+            startActivity(editScreenIntent);
 
             //assign photo to image view on edit image activity
-            Intent editPhotoIntent = new Intent(this, EditImageActivity.class);
-            editPhotoIntent.putExtra("URL", fileUri);
+//            Intent editPhotoIntent = new Intent(this, EditImageActivity.class);
+//            editPhotoIntent.putExtra("URL", fileUri);
 
 
-            startActivity(editPhotoIntent);
+//            startActivity(editPhotoIntent);
             Toast.makeText(this, "photo taken and saved", Toast.LENGTH_SHORT).show();
 
             //refreshes the recycler view (list of images)
@@ -241,17 +272,14 @@ public class UserProfileActivity extends AppCompatActivity
         }
     }
 
+    //refreshes loader after picture is taken
     @Override
     protected void onResume() {
         super.onResume();
-//        getSupportLoaderManager().initLoader(MEDIASTORE_LOADER_ID,null,this);
         getSupportLoaderManager().restartLoader(MEDIASTORE_LOADER_ID,null,this);
-        //run on background
     }
 
     private void createImageGallery(){
-
-//        File storageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 //        File mGalleryFolder = new File(Environment.getExternalStorageDirectory(), GALLERY_DIRECTORY_NAME);
 
         //reference to the device storage
@@ -267,36 +295,41 @@ public class UserProfileActivity extends AppCompatActivity
     private File createImageFile() throws IOException{
 
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "IMAGE_" + timeStamp + "_";
+        String imageFileName = "IMAGE_" + timeStamp;
 
-//        File storageDirectory = new File (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), GALLERY_DIRECTORY_NAME);
-//        mGalleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), GALLERY_DIRECTORY_NAME);
-        File storageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+//        //Stores a original copy of the picture on PICTURES FOLDER
+//        File storageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+//        File image = File.createTempFile(imageFileName,".jpg",storageDirectory());
 
+//        //Saves original copy on custom folder "QuickSnap"
+//        File image = new File(mGalleryFolder + File.separator + imageFileName + ".jpg");
 
-//        File image = File.createTempFile(imageFileName,".jpg",storageDirectory);
-//        File image = new File(storageDirectory + File.separator + imageFileName + ".jpg");
-        File image = new File(storageDirectory + File.separator + imageFileName + ".jpg");
-//        fileUri = Uri.fromFile(image);
-
-
+        File image = File.createTempFile(imageFileName,".jpg",getExternalCacheDir());
         mImageFileLocation = image.getAbsolutePath();
         mMediaStoreAdapter.notifyDataSetChanged();
         return image;
     }
 
-//    File createImageFile() throws IOException{
-//        String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
-//        String imageFileName = "IMAGE_" + timeStamp + "_";
-//
-//        File image = new File(mGalleryFolder + File.separator + imageFileName + ".jpg");
-////        File image = File.createTempFile(imageFileName,".jpg",mGalleryFolder);
-//        fileUri = Uri.fromFile(image);
-//
-////        mImageFileLocation = image.getAbsolutePath();
-//        Toast.makeText(this, image.getPath(), Toast.LENGTH_LONG).show();
-//        return image;
-//    }
+    public void openCamera(){
+
+                Intent callCameraAppIntent = new Intent();
+                callCameraAppIntent.setAction(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+
+                File photoFile = null;
+                try{
+                    photoFile = createImageFile();
+
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
+
+                String authorities = getApplicationContext().getPackageName() + ".fileprovider";
+                fileUri = FileProvider.getUriForFile(getApplicationContext(), authorities, photoFile);
+
+                callCameraAppIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+
+                startActivityForResult(callCameraAppIntent, ACTIVITY_START_CAMERA_APP);
+    }
 
     @Override
     public void onBackPressed() {
@@ -324,18 +357,24 @@ public class UserProfileActivity extends AppCompatActivity
         switch (item.getItemId()){
             case R.id.action_settings:
                 try{
-                    mMediaStoreAdapter.notifyDataSetChanged();
                     getSupportLoaderManager().restartLoader(MEDIASTORE_LOADER_ID,null,this);
                     Toast.makeText(this,"refresh", Toast.LENGTH_SHORT).show();
                 }catch(android.content.ActivityNotFoundException anfe){
+                    anfe.printStackTrace();
                 }
                 return true;
+            case R.id.action_camera:
+                try{
+                    openCamera();
+                }catch(android.content.ActivityNotFoundException anfe){
+                    anfe.printStackTrace();
+                }
             //add more here
             default:
                 return super.onOptionsItemSelected(item);
         }
 
-//        //noinspection SimplifiableIfStatement
+////        noinspection SimplifiableIfStatement
 //        if (id == R.id.action_settings) {
 //            return true;
 //        }
@@ -417,10 +456,11 @@ public class UserProfileActivity extends AppCompatActivity
 //        startActivity(fullScreenIntent);
 
         //opens image in editimage activity
-        Intent fullScreenIntent = new Intent(this, EditImageActivity.class);
+        Intent fullScreenIntent = new Intent(this, FullScreenImageActivity.class);
         fullScreenIntent.setData(imageUri);
         startActivity(fullScreenIntent);
     }
+
 
     @Override
     public void OnClickVideo(Uri videoUri) {
@@ -428,6 +468,13 @@ public class UserProfileActivity extends AppCompatActivity
         videoPlayIntent.setData(videoUri);
         startActivity(videoPlayIntent);
     }
+
+//    @Override
+//    public void OnLongClick(Uri imageUri) {
+//        Intent videoPlayIntent = new Intent(this, FullScreenImageActivity.class);
+//        videoPlayIntent.setData(imageUri);
+//        startActivity(videoPlayIntent);
+//    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

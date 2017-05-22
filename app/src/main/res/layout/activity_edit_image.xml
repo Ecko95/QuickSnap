@@ -43,30 +43,21 @@
         app:layout_constraintVertical_bias="0.475"
         app:layout_constraintHorizontal_bias="0.521" />
 
-    <ImageButton
-        android:id="@+id/btn_download"
-        android:layout_width="48dp"
-        android:layout_height="wrap_content"
+    <Button
+        android:id="@+id/btn_save"
+        android:onClick="saveEditedImage"
+        android:layout_width="45dp"
+        android:layout_height="64dp"
+        android:background="#0000"
+        android:drawablePadding="5sp"
+        android:drawableTop="@drawable/file_download"
+        android:paddingTop="10sp"
+        android:text="Save"
+        android:textColor="#FFFFFF"
+        app:layout_constraintTop_toTopOf="parent"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:background="#0000"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/file_download"
-        android:layout_marginStart="8dp" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="48dp"
-        android:layout_height="wrap_content"
-        android:text="Save"
-        android:textAlignment="center"
-        android:textColor="@android:color/white"
-        android:textSize="12sp"
-        app:layout_constraintTop_toBottomOf="@+id/btn_download"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="8dp" />
+        app:layout_constraintLeft_toLeftOf="parent"/>
 
     <ImageButton
         android:id="@+id/btn_filters"
@@ -118,7 +109,7 @@
                 android:layout_height="match_parent"
 
                 android:background="#0000"
-                android:onClick="normalFilter"
+                android:onClick="btn_normal_filter"
                 android:scaleType="fitCenter"
                 app:srcCompat="@drawable/filter_normal" />
 
@@ -127,7 +118,7 @@
                 android:layout_width="96dp"
                 android:layout_height="match_parent"
                 android:background="#0000"
-                android:onClick="greyscaleFilter"
+                android:onClick="btn_greyscale_filter"
                 android:scaleType="fitCenter"
                 app:srcCompat="@drawable/filter_greyscale" />
 
@@ -136,7 +127,7 @@
                 android:layout_width="96dp"
                 android:layout_height="match_parent"
                 android:background="#0000"
-                android:onClick="invertFilter"
+                android:onClick="btn_invert_filter"
                 android:scaleType="fitCenter"
                 app:srcCompat="@drawable/filter_invert" />
 
@@ -146,7 +137,6 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1.47"
                 android:background="#0000"
-                android:onClick="invertFilter"
                 android:scaleType="fitCenter"
                 app:srcCompat="@drawable/filter_normal" />
 
@@ -156,7 +146,6 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1.47"
                 android:background="#0000"
-                android:onClick="invertFilter"
                 android:scaleType="fitCenter"
                 app:srcCompat="@drawable/filter_normal" />
 
@@ -166,7 +155,6 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1.47"
                 android:background="#0000"
-                android:onClick="invertFilter"
                 android:scaleType="fitCenter"
                 app:srcCompat="@drawable/filter_normal" />
 
@@ -176,7 +164,6 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1.47"
                 android:background="#0000"
-                android:onClick="invertFilter"
                 android:scaleType="fitCenter"
                 app:srcCompat="@drawable/filter_normal" />
 

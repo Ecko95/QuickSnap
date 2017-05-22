@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 /**
  * Created by Joshua on 28/04/2017.
@@ -22,15 +23,18 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
     private Cursor mMediaStoreCursor;
     private final Activity mActivity;
     private OnClickThumbnailListener mOnclickThumbnailListener;
+    private View.OnLongClickListener mOnlongClickThumbnailListener;
 
     public interface OnClickThumbnailListener{
         void OnClickImage(Uri imageUri);
         void OnClickVideo(Uri videoUri);
+//        void OnLongClick(Uri imageUri);
     }
 
     public MediaStoreAdapter(Activity activity) {
         this.mActivity = activity;
         this.mOnclickThumbnailListener = (OnClickThumbnailListener)activity;
+//        this.mOnlongClickThumbnailListener = (View.OnLongClickListener)activity;
     }
 
     @Override
@@ -47,6 +51,7 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
 //        if (bitmap != null){
 //            holder.getmImageView().setImageBitmap(bitmap);
 //        }
+
 
         Glide.with(mActivity)
                 .load(getUriFromMediaStore(position))
@@ -80,6 +85,12 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
         public void onClick(View view) {
             getOnClickUri(getAdapterPosition());
         }
+
+//        @Override
+//        public boolean onLongClick(View v) {
+//            getOnClickUri(getAdapterPosition());
+//            return true;
+//        }
     }
 
     private Cursor swapCursor(Cursor cursor){
@@ -100,6 +111,7 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
         }
     }
 
+    //not in use, using Glide instead
     private Bitmap getBitmapFromMediaStore(int position){
         int idIndex = mMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns._ID);
         int mediaTypeIndex = mMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns.MEDIA_TYPE);
@@ -136,6 +148,26 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
         Uri mediaUri = Uri.parse("file://" + dataString);
         return mediaUri;
     }
+
+//    private void getOnLongClickUri(int position){
+//        int mediaTypeIndex = mMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns.MEDIA_TYPE);
+//        int dataIndex = mMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
+//
+//        //checks if file is video or image
+//        mMediaStoreCursor.moveToPosition(position);
+//        String dataString = mMediaStoreCursor.getString(dataIndex);
+//        Uri mediaUri = Uri.parse("file://" + dataString);
+//
+//        switch (mMediaStoreCursor.getInt(mediaTypeIndex)){
+//            case MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE:
+//                mOnlongClickThumbnailListener.onLongClick(mediaUri);
+//                break;
+//            case MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO:
+//                mOnclickThumbnailListener.OnClickVideo(mediaUri);
+//                break;
+//            default:
+//        }
+//    }
 
     //gets uri of clicked image
     private void getOnClickUri(int position){
