@@ -5,11 +5,16 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
+        android:id="@+id/mediastoreImageView"
         android:layout_width="128dp"
         android:layout_height="128dp"
-        android:id="@+id/mediastoreImageView"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        android:layout_margin="0dp"
+        android:adjustViewBounds="true"
+        android:cropToPadding="true"
+        android:paddingBottom="2dp"
+        android:paddingEnd="2dp"
+        android:paddingStart="2dp"
+        android:scaleType="centerCrop" />
 </RelativeLayout>

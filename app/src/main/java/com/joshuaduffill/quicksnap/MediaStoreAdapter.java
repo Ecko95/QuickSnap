@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 /**
  * Created by Joshua on 28/04/2017.
@@ -22,15 +23,18 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
     private Cursor mMediaStoreCursor;
     private final Activity mActivity;
     private OnClickThumbnailListener mOnclickThumbnailListener;
+    private View.OnLongClickListener mOnlongClickThumbnailListener;
 
     public interface OnClickThumbnailListener{
         void OnClickImage(Uri imageUri);
         void OnClickVideo(Uri videoUri);
+//        void OnLongClick(Uri imageUri);
     }
 
     public MediaStoreAdapter(Activity activity) {
         this.mActivity = activity;
         this.mOnclickThumbnailListener = (OnClickThumbnailListener)activity;
+//        this.mOnlongClickThumbnailListener = (View.OnLongClickListener)activity;
     }
 
     @Override
@@ -40,20 +44,31 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
         return new ViewHolder(view);
     }
 
+
+
     //pass the bitmaps to the imageView
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-//        Bitmap bitmap = getBitmapFromMediaStore(position);
-//        if (bitmap != null){
-//            holder.getmImageView().setImageBitmap(bitmap);
-//        }
+        Uri imageUri = getUriFromMediaStore(position);
 
-        Glide.with(mActivity)
-                .load(getUriFromMediaStore(position))
-                .thumbnail( 0.1f )
-                .centerCrop()
-                .into(holder.getmImageView());
+        if (imageUri != null){
 
+            Glide.with(mActivity)
+                    .load(getUriFromMediaStore(position))
+//                    .centerCrop()
+                    .into(holder.getmImageView());
+        }else{
+            // clear when no image is shown, don't use holder.imageView.setImageDrawable(null) to do the same
+            Glide.clear(holder.getmImageView());
+            holder.getmImageView().setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onViewRecycled(ViewHolder holder) {
+        super.onViewRecycled(holder);
+
+        Glide.clear(holder.getmImageView());
     }
 
     @Override
@@ -80,6 +95,12 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
         public void onClick(View view) {
             getOnClickUri(getAdapterPosition());
         }
+
+//        @Override
+//        public boolean onLongClick(View v) {
+//            getOnClickUri(getAdapterPosition());
+//            return true;
+//        }
     }
 
     private Cursor swapCursor(Cursor cursor){
@@ -100,6 +121,7 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
         }
     }
 
+    //not in use, using Glide instead
     private Bitmap getBitmapFromMediaStore(int position){
         int idIndex = mMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns._ID);
         int mediaTypeIndex = mMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns.MEDIA_TYPE);
@@ -136,6 +158,26 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
         Uri mediaUri = Uri.parse("file://" + dataString);
         return mediaUri;
     }
+
+//    private void getOnLongClickUri(int position){
+//        int mediaTypeIndex = mMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns.MEDIA_TYPE);
+//        int dataIndex = mMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
+//
+//        //checks if file is video or image
+//        mMediaStoreCursor.moveToPosition(position);
+//        String dataString = mMediaStoreCursor.getString(dataIndex);
+//        Uri mediaUri = Uri.parse("file://" + dataString);
+//
+//        switch (mMediaStoreCursor.getInt(mediaTypeIndex)){
+//            case MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE:
+//                mOnlongClickThumbnailListener.onLongClick(mediaUri);
+//                break;
+//            case MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO:
+//                mOnclickThumbnailListener.OnClickVideo(mediaUri);
+//                break;
+//            default:
+//        }
+//    }
 
     //gets uri of clicked image
     private void getOnClickUri(int position){
