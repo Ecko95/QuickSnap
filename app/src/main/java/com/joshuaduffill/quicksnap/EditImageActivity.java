@@ -45,9 +45,6 @@ public class EditImageActivity extends AppCompatActivity {
     private HorizontalScrollView mfilterView;
     private ImageButton mButtonFilter;
     private Button mCancelButton;
-    private ImageButton btnGreyscale;
-    private ImageButton btnInvert;
-    private ImageButton btnNormal;
 
     private File editedImage;
 
@@ -64,9 +61,6 @@ public class EditImageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_image);
 
 
-        btnNormal = (ImageButton) findViewById(R.id.btn_normal);
-        btnInvert = (ImageButton) findViewById(R.id.btn_invert);
-        btnGreyscale = (ImageButton) findViewById(R.id.btn_greyscale);
         mButtonFilter = (ImageButton) findViewById(R.id.btn_filters);
         mfilterView = (HorizontalScrollView) findViewById(R.id.filterScrollView);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBarImage);
@@ -293,7 +287,7 @@ public class EditImageActivity extends AppCompatActivity {
                 try{
                     //renders invert image
                     ImageProcessor imageProcessor = new ImageProcessor();
-                    mEditedBitmap = imageProcessor.applyHueFilter(mOriginalBitmap,100);
+                    mEditedBitmap = imageProcessor.doInvert(mOriginalBitmap);
                 }catch (Exception ex){
                     ex.printStackTrace();
                 }
@@ -322,11 +316,6 @@ public class EditImageActivity extends AppCompatActivity {
                 }
             });
             try{
-                //renders normal image
-//                mOriginalBitmap.compress(JPEG, 10, out);
-//                mOriginalBitmap.compress(JPEG, 50, out);
-
-
 
             }catch (Exception ex){
                 ex.printStackTrace();
@@ -341,6 +330,100 @@ public class EditImageActivity extends AppCompatActivity {
         }
     };
 
+    Thread rotate90 = new Thread(){
+        @Override
+        public void run() {
+            android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
+            progressBarbHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mRenderingBar.setVisibility(View.VISIBLE);
+                }
+            });
+
+            try{
+                //renders invert image
+                ImageProcessor imageProcessor = new ImageProcessor();
+                mEditedBitmap = imageProcessor.rotate(mEditedBitmap,90);
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mPhotoCaptuedImageView.setImageBitmap(mEditedBitmap);
+                    finishRendering();
+                }
+            });
+
+
+        }
+    };
+
+    Thread rotate180 = new Thread(){
+        @Override
+        public void run() {
+            android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
+            progressBarbHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mRenderingBar.setVisibility(View.VISIBLE);
+                }
+            });
+
+
+            try{
+                //renders invert image
+                ImageProcessor imageProcessor = new ImageProcessor();
+                mEditedBitmap = imageProcessor.rotate(mEditedBitmap,180);
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mPhotoCaptuedImageView.setImageBitmap(mEditedBitmap);
+                    finishRendering();
+                }
+            });
+
+
+        }
+    };
+
+    Thread sharpen = new Thread(){
+        @Override
+        public void run() {
+            android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
+            progressBarbHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mRenderingBar.setVisibility(View.VISIBLE);
+                }
+            });
+
+            try{
+                //renders invert image
+                ImageProcessor imageProcessor = new ImageProcessor();
+                mEditedBitmap = imageProcessor.sharpen(mEditedBitmap,10);
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mPhotoCaptuedImageView.setImageBitmap(mEditedBitmap);
+                    finishRendering();
+                }
+            });
+
+
+        }
+    };
+
     public void btn_normal_filter(View view){
         normalRendering.start();
     }
@@ -349,6 +432,18 @@ public class EditImageActivity extends AppCompatActivity {
     }
     public void btn_invert_filter(View view){
         invertRendering.start();
+    }
+    public void btn_rotate_90 (View view){
+        mEditedBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
+        rotate90.start();
+    }
+    public void btn_rotate_180 (View view){
+        mEditedBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
+        rotate180.start();
+    }
+    public void btn_sharpen_filter (View view){
+        mEditedBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
+        sharpen.start();
     }
 
 

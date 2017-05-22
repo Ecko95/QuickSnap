@@ -44,21 +44,31 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
         return new ViewHolder(view);
     }
 
+
+
     //pass the bitmaps to the imageView
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-//        Bitmap bitmap = getBitmapFromMediaStore(position);
-//        if (bitmap != null){
-//            holder.getmImageView().setImageBitmap(bitmap);
-//        }
+        Uri imageUri = getUriFromMediaStore(position);
 
+        if (imageUri != null){
 
-        Glide.with(mActivity)
-                .load(getUriFromMediaStore(position))
-                .thumbnail( 0.1f )
-                .centerCrop()
-                .into(holder.getmImageView());
+            Glide.with(mActivity)
+                    .load(getUriFromMediaStore(position))
+//                    .centerCrop()
+                    .into(holder.getmImageView());
+        }else{
+            // clear when no image is shown, don't use holder.imageView.setImageDrawable(null) to do the same
+            Glide.clear(holder.getmImageView());
+            holder.getmImageView().setVisibility(View.GONE);
+        }
+    }
 
+    @Override
+    public void onViewRecycled(ViewHolder holder) {
+        super.onViewRecycled(holder);
+
+        Glide.clear(holder.getmImageView());
     }
 
     @Override

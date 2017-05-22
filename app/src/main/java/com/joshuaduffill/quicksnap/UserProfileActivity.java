@@ -58,13 +58,16 @@ import static android.R.attr.id;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.joshuaduffill.quicksnap.R.id.cameraFab;
+import static com.joshuaduffill.quicksnap.R.id.drawer_layout;
+import static com.joshuaduffill.quicksnap.R.id.fullScreenImageView;
 
 public class UserProfileActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor>,
         MediaStoreAdapter.OnClickThumbnailListener{
 
     private final static int MEDIASTORE_LOADER_ID = 0;
-    private static final int ACTIVITY_START_CAMERA_APP = 0;
+    private final static int ACTIVITY_START_CAMERA_APP = 0;
+    static final int SNACK_REQUEST_FORM = 1;
 
     private RecyclerView mThumbailRecyclerView;
     private MediaStoreAdapter mMediaStoreAdapter;
@@ -123,7 +126,7 @@ public class UserProfileActivity extends AppCompatActivity
 
 
 
-
+        navigationView.setCheckedItem(R.id.nav_gallery);
 //        checkReadExternalStoragePermission();
 
         //sets number og columns
@@ -133,11 +136,8 @@ public class UserProfileActivity extends AppCompatActivity
         //sets the number of columns on gird layout
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this,3);
         mThumbailRecyclerView.setLayoutManager(gridLayoutManager);
-
         mMediaStoreAdapter = new MediaStoreAdapter(this);
         mThumbailRecyclerView.setAdapter(mMediaStoreAdapter);
-
-
         mThumbailRecyclerView.setHasFixedSize(true);
         mThumbailRecyclerView.setItemViewCacheSize(20);
         mThumbailRecyclerView.setDrawingCacheEnabled(true);
@@ -155,15 +155,25 @@ public class UserProfileActivity extends AppCompatActivity
                     mCameraFab.show();
                 }
 
+                if(newState == RecyclerView.SCROLL_STATE_IDLE && mCameraFab.isShown()){
+
+                    mCameraFab.hide();
+                }
+
+
                 super.onScrollStateChanged(recyclerView, newState);
             }
 
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            public void onScrolled(RecyclerView recyclerView, int width, int height) {
 
+                if(height == 0){
 
-                if (dy > 0 ||dy<0 && mCameraFab.isShown())
-                {
+                    mCameraFab.hide();
+                }
+
+                if (height > 0 || height < 0 && mCameraFab.isShown()){
+
                     mCameraFab.hide();
                 }
 
@@ -176,30 +186,6 @@ public class UserProfileActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
             mThumbailRecyclerView.getLayoutManager().smoothScrollToPosition(mThumbailRecyclerView,null,0);
-
-//                //opens camera app
-//                Intent callCameraAppIntent = new Intent();
-//                callCameraAppIntent.setAction(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-//
-//                File photoFile = null;
-//                try{
-//                    photoFile = createImageFile();
-////                    fileUri = FileProvider.getUriForFile(UserProfileActivity.this, getApplicationContext().getPackageName() + ".fileprovider",
-////                            createImageFile());
-//                }catch(IOException e){
-//                    e.printStackTrace();
-//                }
-//
-//                String authorities = getApplicationContext().getPackageName() + ".fileprovider";
-//                fileUri = FileProvider.getUriForFile(getApplicationContext(), authorities, photoFile);
-//
-//                callCameraAppIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-//
-//                startActivityForResult(callCameraAppIntent, ACTIVITY_START_CAMERA_APP);
-
-
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
             }
         });
 
@@ -220,19 +206,7 @@ public class UserProfileActivity extends AppCompatActivity
     protected void onActivityResult (int requestCode, int resultCode, Intent resultData){
         //check if activity camera has started
         if(requestCode == ACTIVITY_START_CAMERA_APP && resultCode == RESULT_OK){
-//            Toast.makeText(this, "Picture taken successfully", Toast.LENGTH_SHORT).show();
-//            Bundle extras = resultData.getExtras();
-//            Bitmap photoCapturedBitmap = (Bitmap) extras.get("resultData");
-//
-//            Bitmap photoCapturedBitmap = BitmapFactory.decodeFile(mImageFileLocation);
 
-//            if(fileUri != null){
-//
-//                Uri imageTaken = fileUri;
-//                editPhotoIntent.putExtra("URL", imageTaken);
-//                startActivity(editPhotoIntent);
-//            }
-//
 
 
             Intent editScreenIntent = new Intent(this, EditImageActivity.class);
@@ -268,7 +242,6 @@ public class UserProfileActivity extends AppCompatActivity
             );
 
 
-
         }
     }
 
@@ -301,10 +274,18 @@ public class UserProfileActivity extends AppCompatActivity
 //        File storageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 //        File image = File.createTempFile(imageFileName,".jpg",storageDirectory());
 
+        //stores picture in extra output directory
+//        File tempDir= Environment.getExternalStorageDirectory();
+//        tempDir=new File(tempDir.getAbsolutePath()+"/.temp/");
+
+        File image = File.createTempFile(imageFileName,".jpg",getExternalCacheDir());
+        image.deleteOnExit();
+
 //        //Saves original copy on custom folder "QuickSnap"
 //        File image = new File(mGalleryFolder + File.separator + imageFileName + ".jpg");
 
-        File image = File.createTempFile(imageFileName,".jpg",getExternalCacheDir());
+        //creates image and stores in external chache directory
+//        File image = File.createTempFile(imageFileName,".jpg",getExternalCacheDir());
         mImageFileLocation = image.getAbsolutePath();
         mMediaStoreAdapter.notifyDataSetChanged();
         return image;
@@ -355,7 +336,7 @@ public class UserProfileActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
 //        int id = item.getItemId();
         switch (item.getItemId()){
-            case R.id.action_settings:
+            case R.id.action_resfresh:
                 try{
                     getSupportLoaderManager().restartLoader(MEDIASTORE_LOADER_ID,null,this);
                     Toast.makeText(this,"refresh", Toast.LENGTH_SHORT).show();
@@ -381,6 +362,8 @@ public class UserProfileActivity extends AppCompatActivity
 //        return super.onOptionsItemSelected(item);
     }
 
+
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -388,11 +371,10 @@ public class UserProfileActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_favourites) {
-//            Intent callCameraApp = new Intent();
-//            callCameraApp.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-//            startActivityForResult(callCameraApp, ACTIVITY_START_CAMERA_APP);
+//
 
         } else if (id == R.id.nav_gallery) {
+
 
         } else if (id == R.id.nav_manage) {
 
@@ -458,9 +440,9 @@ public class UserProfileActivity extends AppCompatActivity
         //opens image in editimage activity
         Intent fullScreenIntent = new Intent(this, FullScreenImageActivity.class);
         fullScreenIntent.setData(imageUri);
-        startActivity(fullScreenIntent);
-    }
+        startActivityForResult(fullScreenIntent, SNACK_REQUEST_FORM);
 
+    }
 
     @Override
     public void OnClickVideo(Uri videoUri) {

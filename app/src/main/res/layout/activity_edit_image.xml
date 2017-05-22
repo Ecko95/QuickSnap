@@ -45,48 +45,68 @@
 
     <Button
         android:id="@+id/btn_save"
-        android:onClick="saveEditedImage"
         android:layout_width="45dp"
-        android:layout_height="64dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:background="#0000"
         android:drawablePadding="5sp"
         android:drawableTop="@drawable/file_download"
+        android:onClick="saveEditedImage"
         android:paddingTop="10sp"
         android:text="Save"
+        android:textAlignment="center"
         android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toTopOf="@+id/filterScrollView"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageButton
         android:id="@+id/btn_filters"
-        android:layout_width="36dp"
-        android:layout_height="wrap_content"
+        android:layout_width="45dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
         android:background="#0000"
         android:onClick="openFilters"
-        app:srcCompat="@drawable/ic_photo_filter_white_36dp"
-        android:layout_marginRight="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/renderingProgressBar"
+        app:layout_constraintHorizontal_bias="0.975"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp" />
+        app:layout_constraintVertical_bias="0.044"
+        app:srcCompat="@drawable/ic_photo_filter_white_36dp" />
 
     <Button
         android:id="@+id/btn_cancel"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="16dp"
         android:onClick="cancelProcess"
         android:text="Cancel"
         android:textColor="@android:color/white"
         android:visibility="gone"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintBottom_toTopOf="@+id/renderingProgressBar"
+        app:layout_constraintHorizontal_bias="0.971"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_constraintRight_creator="1"
+        app:layout_constraintVertical_bias="0.047"
         tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toRightOf="parent" />
+        tools:layout_constraintRight_creator="1" />
 
     <HorizontalScrollView
         android:id="@+id/filterScrollView"
@@ -95,8 +115,7 @@
         android:visibility="invisible"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="511dp"
-        android:layout_marginLeft="0dp">
+        android:layout_marginTop="511dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -132,31 +151,34 @@
                 app:srcCompat="@drawable/filter_invert" />
 
             <ImageButton
-                android:id="@+id/imageButton8"
+                android:id="@+id/btn_rotate_90"
                 android:layout_width="96dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1.47"
                 android:background="#0000"
+                android:onClick="btn_rotate_90"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/filter_normal" />
+                app:srcCompat="@drawable/rotate90" />
 
             <ImageButton
-                android:id="@+id/imageButton7"
+                android:id="@+id/btn_rotate_180"
                 android:layout_width="96dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1.47"
                 android:background="#0000"
+                android:onClick="btn_rotate_180"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/filter_normal" />
+                app:srcCompat="@drawable/rotate180" />
 
             <ImageButton
-                android:id="@+id/imageButton6"
+                android:id="@+id/btn_sharpen_filter"
                 android:layout_width="96dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1.47"
                 android:background="#0000"
+                android:onClick="btn_sharpen_filter"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/filter_normal" />
+                app:srcCompat="@drawable/sharpen" />
 
             <ImageButton
                 android:id="@+id/imageButton5"
@@ -165,7 +187,7 @@
                 android:layout_weight="1.47"
                 android:background="#0000"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/filter_normal" />
+                app:srcCompat="@mipmap/quicksnap_logo" />
 
 
         </LinearLayout>

@@ -7,9 +7,9 @@
         android:title="@string/action_camera"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_resfresh"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:title="@string/action_refresh"
         app:showAsAction="never"/>
 
 </menu>
