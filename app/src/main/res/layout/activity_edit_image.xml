@@ -54,7 +54,7 @@
         android:layout_marginTop="16dp"
         android:background="#0000"
         android:drawablePadding="5sp"
-        android:drawableTop="@drawable/file_download"
+        android:drawableTop="@mipmap/file_download"
         android:onClick="saveEditedImage"
         android:paddingTop="10sp"
         android:text="Save"
@@ -84,7 +84,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.044"
-        app:srcCompat="@drawable/ic_photo_filter_white_36dp" />
+        app:srcCompat="@mipmap/ic_photo_filter_white_36dp" />
 
     <Button
         android:id="@+id/btn_cancel"
@@ -130,7 +130,7 @@
                 android:background="#0000"
                 android:onClick="btn_normal_filter"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/filter_normal" />
+                app:srcCompat="@mipmap/filter_normal" />
 
             <ImageButton
                 android:id="@+id/btn_greyscale"
@@ -139,7 +139,7 @@
                 android:background="#0000"
                 android:onClick="btn_greyscale_filter"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/filter_greyscale" />
+                app:srcCompat="@mipmap/filter_greyscale" />
 
             <ImageButton
                 android:id="@+id/btn_invert"
@@ -148,7 +148,7 @@
                 android:background="#0000"
                 android:onClick="btn_invert_filter"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/filter_invert" />
+                app:srcCompat="@mipmap/filter_invert" />
 
             <ImageButton
                 android:id="@+id/btn_rotate_90"
@@ -158,7 +158,7 @@
                 android:background="#0000"
                 android:onClick="btn_rotate_90"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/rotate90" />
+                app:srcCompat="@mipmap/rotate90" />
 
             <ImageButton
                 android:id="@+id/btn_rotate_180"
@@ -168,7 +168,7 @@
                 android:background="#0000"
                 android:onClick="btn_rotate_180"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/rotate180" />
+                app:srcCompat="@mipmap/rotate180" />
 
             <ImageButton
                 android:id="@+id/btn_sharpen_filter"
@@ -178,7 +178,7 @@
                 android:background="#0000"
                 android:onClick="btn_sharpen_filter"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/sharpen" />
+                app:srcCompat="@mipmap/sharpen" />
 
             <ImageButton
                 android:id="@+id/imageButton5"

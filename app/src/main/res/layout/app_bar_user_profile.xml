@@ -33,6 +33,6 @@
 
         app:backgroundTint="@color/primary"
         app:rippleColor="@color/common_google_signin_btn_text_dark_default"
-        app:srcCompat="@drawable/ic_keyboard_arrow_up_white_48dp" />
+        app:srcCompat="@mipmap/ic_keyboard_arrow_up_white_48dp" />
 
 </android.support.design.widget.CoordinatorLayout>
