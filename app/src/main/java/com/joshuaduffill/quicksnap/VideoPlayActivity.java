@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -19,7 +20,7 @@ import android.widget.Toast;
 import java.io.IOException;
 
 public class VideoPlayActivity extends AppCompatActivity implements SurfaceHolder.Callback, MediaPlayer.OnCompletionListener,
-    AudioManager.OnAudioFocusChangeListener{
+    AudioManager.OnAudioFocusChangeListener,View.OnTouchListener{
 
     private MediaPlayer mMediaPlayer;
     private Uri mVideoUri;
@@ -29,6 +30,23 @@ public class VideoPlayActivity extends AppCompatActivity implements SurfaceHolde
     private NoisyAudio mNoisyAudio;
     //intent filter to specify the right action to get notify of
     private IntentFilter mNoisyIntentFilter;
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        View decorView = getWindow().getDecorView();
+        switch (event.getAction()){
+
+            case MotionEvent.ACTION_MOVE:
+
+                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_LAYOUT_FLAGS
+                );
+
+                break;
+        }
+        //runs loop once pressed
+        return false;
+    }
 
     //broacast receviver for noise audio
     private class NoisyAudio extends BroadcastReceiver{
@@ -150,11 +168,11 @@ public class VideoPlayActivity extends AppCompatActivity implements SurfaceHolde
         View decorView = getWindow().getDecorView();
         if(hasFocus){
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                     | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            );
         }
 
     }

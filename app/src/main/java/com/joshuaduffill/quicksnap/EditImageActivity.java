@@ -78,7 +78,7 @@ public class EditImageActivity extends AppCompatActivity {
             Glide.with(this)
                     .load(fileUri)
                     .asBitmap()
-//                    .override(1280,720)
+                    .override(1024,576)
                     .skipMemoryCache( true )
                     .fitCenter()
                     .listener(new RequestListener<Uri, Bitmap>() {
@@ -408,7 +408,7 @@ public class EditImageActivity extends AppCompatActivity {
             try{
                 //renders invert image
                 ImageProcessor imageProcessor = new ImageProcessor();
-                mEditedBitmap = imageProcessor.sharpen(mEditedBitmap,10);
+                mEditedBitmap = imageProcessor.sharpen(mEditedBitmap,15);
             }catch (Exception ex){
                 ex.printStackTrace();
             }
