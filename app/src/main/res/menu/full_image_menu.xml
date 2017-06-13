@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/option_edit"
+        android:icon="@mipmap/ic_edit_white"
+        android:title="@string/option_edit"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/option_delete"
+        android:icon="@mipmap/ic_delete_white"
+        android:title="@string/option_delete"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/option_share"
+        android:icon="@mipmap/ic_share_white"
+        android:title="@string/option_share"
+        app:showAsAction="ifRoom" />
+
+</menu>

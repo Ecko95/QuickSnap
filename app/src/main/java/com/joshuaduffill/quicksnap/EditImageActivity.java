@@ -450,7 +450,7 @@ public class EditImageActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.context, menu);
+        getMenuInflater().inflate(R.menu.full_image_menu, menu);
         return true;
     }
 }

@@ -227,6 +227,7 @@ public class UserProfileActivity extends AppCompatActivity
 //            Intent mediaScanIntent = new Intent (Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
 //            sendBroadcast(mediaScanIntent);
 
+
             MediaScannerConnection.scanFile(
                     getApplicationContext(),
                     new String[]{mImageFileLocation},

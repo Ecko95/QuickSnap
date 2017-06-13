@@ -28,6 +28,7 @@
 
     <string name="option_delete">Delete</string>
     <string name="option_edit">Edit</string>
+    <string name="option_share">Share</string>
 
     <string name="title_activity_fullscreen_image">FullscreenImageActivity</string>
     <string name="dummy_button">Dummy Button</string>
