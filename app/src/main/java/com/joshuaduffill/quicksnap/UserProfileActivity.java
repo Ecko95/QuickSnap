@@ -67,7 +67,7 @@ public class UserProfileActivity extends AppCompatActivity
 
     private final static int MEDIASTORE_LOADER_ID = 0;
     private final static int ACTIVITY_START_CAMERA_APP = 0;
-    static final int SNACK_REQUEST_FORM = 1;
+    static final int REQUEST_CODE = 1;
 
     private RecyclerView mThumbailRecyclerView;
     private MediaStoreAdapter mMediaStoreAdapter;
@@ -200,10 +200,19 @@ public class UserProfileActivity extends AppCompatActivity
     }
 
 
-
     //continue here
 
     protected void onActivityResult (int requestCode, int resultCode, Intent resultData){
+
+        if (resultCode == RESULT_OK){
+////scans for new or deleted images when it returns from childs.
+//            Intent mediaScanIntent = new Intent (Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+//            sendBroadcast(mediaScanIntent);
+//            getSupportLoaderManager().restartLoader(MEDIASTORE_LOADER_ID,null,this);
+
+
+        }
+
         //check if activity camera has started
         if(requestCode == ACTIVITY_START_CAMERA_APP && resultCode == RESULT_OK){
 
@@ -235,7 +244,7 @@ public class UserProfileActivity extends AppCompatActivity
                     new MediaScannerConnection.OnScanCompletedListener() {
                         @Override
                         public void onScanCompleted(String path, Uri uri) {
-                            Log.v("Joshuaduffill",
+                            Log.v("Joshua",
                                     "file" + path + "was scanned successfully: " + uri);
                         }
                     }
@@ -441,7 +450,8 @@ public class UserProfileActivity extends AppCompatActivity
         //opens image in editimage activity
         Intent fullScreenIntent = new Intent(this, FullScreenImageActivity.class);
         fullScreenIntent.setData(imageUri);
-        startActivityForResult(fullScreenIntent, SNACK_REQUEST_FORM);
+        startActivityForResult(fullScreenIntent, REQUEST_CODE);
+
 
     }
 

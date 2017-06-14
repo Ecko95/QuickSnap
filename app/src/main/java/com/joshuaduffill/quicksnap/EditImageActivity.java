@@ -58,6 +58,15 @@ public class EditImageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        try{
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }catch (NullPointerException ex){
+            //error
+        }
+
         setContentView(R.layout.activity_edit_image);
 
 
@@ -132,7 +141,7 @@ public class EditImageActivity extends AppCompatActivity {
                     new MediaScannerConnection.OnScanCompletedListener() {
                         @Override
                         public void onScanCompleted(String path, Uri uri) {
-                            Log.v("Joshuaduffill",
+                            Log.v("Joshua",
                                     "file" + path + "was scanned successfully: " + uri);
                         }
                     }
@@ -424,6 +433,59 @@ public class EditImageActivity extends AppCompatActivity {
         }
     };
 
+    Thread hueBlue = new Thread(){
+        @Override
+        public void run() {
+
+
+
+
+
+            android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
+            progressBarbHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mRenderingBar.setVisibility(View.VISIBLE);
+                }
+            });
+
+            try{
+                ImageProcessor imageProcessor = new ImageProcessor();
+                int x = 0;
+
+                if (x == 0){
+                    mEditedBitmap = imageProcessor.boost(mOriginalBitmap,3,0.8);
+                    Log.v("execute: ", "boost");
+                    x = 1;
+
+                }if(x == 1){
+                    Log.v("execute: ", "contrast");
+                    //darkroom filters
+//                    mEditedBitmap = imageProcessor.doBrightness(mEditedBitmap,-20);
+                }
+                //renders invert image
+//                ImageProcessor imageProcessor = new ImageProcessor();
+//                mEditedBitmap = imageProcessor.createShadow(mOriginalBitmap);
+//                mEditedBitmap = imageProcessor.boost(mOriginalBitmap,2,0.6);
+//                mEditedBitmap = imageProcessor.boost(mOriginalBitmap,3,0.6);
+//                mEditedBitmap = imageProcessor.createContrast(mOriginalBitmap,-5);
+//                mEditedBitmap = imageProcessor.createSepiaToningEffect(mOriginalBitmap,0,0.299,0.587,0.114);
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mPhotoCaptuedImageView.setImageBitmap(mEditedBitmap);
+                    finishRendering();
+                }
+            });
+
+
+        }
+    };
+
     public void btn_normal_filter(View view){
         normalRendering.start();
     }
@@ -445,8 +507,10 @@ public class EditImageActivity extends AppCompatActivity {
         mEditedBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
         sharpen.start();
     }
-
-
+    public void btn_hue(View view){
+        mEditedBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
+        hueBlue.start();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
