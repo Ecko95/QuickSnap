@@ -67,7 +67,7 @@ public class EditImageActivity extends AppCompatActivity {
             //error
         }
 
-        setContentView(R.layout.activity_edit_image);
+        setContentView(R.layout.activity_edit_image2);
 
 
         mButtonFilter = (ImageButton) findViewById(R.id.btn_filters);
@@ -206,9 +206,9 @@ public class EditImageActivity extends AppCompatActivity {
     }
 
     public void cancelProcess(View view){
-        mfilterView.setVisibility(View.GONE);
+        mfilterView.setVisibility(View.INVISIBLE);
         mButtonFilter.setVisibility(View.VISIBLE);
-        mCancelButton.setVisibility(View.GONE);
+        mCancelButton.setVisibility(View.INVISIBLE);
         mfilterView.animate().translationY(0);
 
 
@@ -224,7 +224,7 @@ public class EditImageActivity extends AppCompatActivity {
             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-//            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
             | View.SYSTEM_UI_FLAG_FULLSCREEN);
         }

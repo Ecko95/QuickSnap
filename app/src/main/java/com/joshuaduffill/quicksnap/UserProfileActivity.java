@@ -205,10 +205,28 @@ public class UserProfileActivity extends AppCompatActivity
     protected void onActivityResult (int requestCode, int resultCode, Intent resultData){
 
         if (resultCode == RESULT_OK){
-////scans for new or deleted images when it returns from childs.
-//            Intent mediaScanIntent = new Intent (Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-//            sendBroadcast(mediaScanIntent);
-//            getSupportLoaderManager().restartLoader(MEDIASTORE_LOADER_ID,null,this);
+            //scans for new or deleted images when it returns from childs.
+            getSupportLoaderManager().restartLoader(MEDIASTORE_LOADER_ID,null,this);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.get(getApplicationContext()).clearDiskCache();
+                }
+            }).start();
+
+            MediaScannerConnection.scanFile(
+                    getApplicationContext(),
+                    new String[]{mImageFileLocation},
+                    null,
+                    new MediaScannerConnection.OnScanCompletedListener() {
+                        @Override
+                        public void onScanCompleted(String path, Uri uri) {
+                            Log.v("Joshua",
+                                    "file" + path + "was scanned successfully: " + uri);
+                        }
+                    }
+
+            );
 
 
         }
@@ -403,6 +421,7 @@ public class UserProfileActivity extends AppCompatActivity
         return true;
     }
 
+    //loads content from device memory using CursorLoader on a background asyncTask
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String[] projection = {
