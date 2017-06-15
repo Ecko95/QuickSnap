@@ -8,6 +8,8 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -151,6 +153,18 @@ public class FullScreenImageActivity extends AppCompatActivity implements View.O
             case R.id.option_share:
                 Intent shareIntent = createShareIntent();
                 startActivity(Intent.createChooser(shareIntent, "send to"));
+                return true;
+            case R.id.option_favourite:
+                File photoFile = null;
+                photoFile = getFilesDir();
+
+                String authorities = getApplicationContext().getPackageName() + ".fileprovider";
+                fileUri = FileProvider.getUriForFile(getApplicationContext(), authorities, new File(fileUri.getPath()));
+
+                Intent favIntent = new Intent(this, FavouritesActivity.class);
+                favIntent.setData(fileUri);
+                startActivity(favIntent);
+
                 return true;
                 //add more here
             default:

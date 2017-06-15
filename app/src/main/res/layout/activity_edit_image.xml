@@ -79,7 +79,7 @@
         android:background="#0000"
         android:drawablePadding="5sp"
         android:drawableTop="@mipmap/ic_back_white"
-        android:onClick="saveEditedImage"
+        android:onClick="backHome"
         android:paddingTop="10sp"
         android:text="Save"
         android:textAlignment="center"

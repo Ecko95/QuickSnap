@@ -152,6 +152,11 @@ public class EditImageActivity extends AppCompatActivity {
         }
     }
 
+    public void backHome(View view){
+        onBackPressed();
+        finish();
+    }
+
 
 
     private File saveImage() throws IOException{

@@ -18,5 +18,10 @@
         android:icon="@mipmap/ic_share_white"
         android:title="@string/option_share"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/option_favourite"
+        android:icon="@mipmap/ic_favorite_white_48dp"
+        android:title="@string/option_favourite"
+        app:showAsAction="ifRoom" />
 
 </menu>

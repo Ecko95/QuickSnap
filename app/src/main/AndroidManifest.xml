@@ -9,6 +9,10 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/quicksnap_logo"
@@ -26,12 +30,14 @@
             android:name=".UserProfileActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".FullScreenImageActivity"
-            android:parentActivityName=".UserProfileActivity"/>
+        <activity
+            android:name=".FullScreenImageActivity"
+            android:parentActivityName=".UserProfileActivity" />
         <activity android:name=".VideoPlayActivity" />
         <activity android:name=".IntroActivity" />
         <activity android:name=".EditImageActivity" />
         <activity android:name=".RegisterActivity" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -39,8 +45,10 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
+
+        <activity android:name=".FavouritesActivity"></activity>
     </application>
 
 </manifest>
