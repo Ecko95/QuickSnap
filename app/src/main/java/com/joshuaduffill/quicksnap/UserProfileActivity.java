@@ -225,10 +225,7 @@ public class UserProfileActivity extends AppCompatActivity
                                     "file" + path + "was scanned successfully: " + uri);
                         }
                     }
-
             );
-
-
         }
 
         //check if activity camera has started

@@ -28,15 +28,15 @@
 
     <Button
         android:id="@+id/btn_save"
+        android:stateListAnimator="@null"
+        android:background="@drawable/ripple_effect_rectangular"
         android:layout_margin="10dp"
         android:layout_width="45dp"
         android:layout_height="60dp"
-        android:background="#0000"
         android:drawablePadding="5sp"
-        android:drawableTop="@mipmap/file_download"
+        android:drawableTop="@mipmap/ic_file_download_white_shadow"
         android:onClick="saveEditedImage"
         android:paddingTop="10sp"
-        android:text="Save"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         tools:layout_editor_absoluteY="0dp"
@@ -46,33 +46,40 @@
 
     <Button
         android:id="@+id/btn_back"
-        android:onClick="backHome"
-
+        android:stateListAnimator="@null"
         android:layout_width="45dp"
         android:layout_height="60dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:layout_margin="10dp"
-        android:drawableTop="@mipmap/ic_arrow_back_white"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
+        android:layout_alignBottom="@+id/btn_cancel"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/ripple_effect"
+        android:drawableTop="@mipmap/ic_arrow_back_white"
+        android:elevation="10dp"
+        android:onClick="backHome"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF" />
 
     <ImageButton
         android:id="@+id/btn_filters"
-        android:padding="5dp"
+        android:stateListAnimator="@null"
         android:layout_width="45dp"
         android:layout_height="60dp"
-        android:background="#0000"
-        android:onClick="openFilters"
-        app:srcCompat="@mipmap/ic_photo_filter_white_36dp"
+        android:layout_alignBottom="@+id/btn_cancel"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/btn_cancel"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_alignTop="@+id/btn_cancel"
-        android:layout_alignParentEnd="true"
-        android:layout_alignBottom="@+id/btn_cancel" />
+        android:background="#0000"
+        android:elevation="10dp"
+        android:onClick="openFilters"
+        android:padding="5dp"
+        app:srcCompat="@mipmap/ic_photo_filter_white_shadow" />
 
     <Button
+
         android:id="@+id/btn_cancel"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
