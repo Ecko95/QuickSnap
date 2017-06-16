@@ -148,6 +148,16 @@
                 app:srcCompat="@mipmap/sharpen" />
 
             <ImageButton
+                android:id="@+id/btn_hue"
+                android:layout_width="96dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.47"
+                android:background="#0000"
+                android:onClick="btn_hue"
+                android:scaleType="fitCenter"
+                app:srcCompat="@mipmap/filter_hue" />
+
+            <ImageButton
                 android:id="@+id/btn_rotate_90"
                 android:layout_width="96dp"
                 android:layout_height="match_parent"
@@ -166,16 +176,6 @@
                 android:onClick="btn_rotate_180"
                 android:scaleType="fitCenter"
                 app:srcCompat="@mipmap/rotate180" />
-
-            <ImageButton
-                android:id="@+id/btn_hue"
-                android:layout_width="96dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1.47"
-                android:background="#0000"
-                android:onClick="btn_hue"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/googleg_standard_color_18" />
 
 
         </LinearLayout>

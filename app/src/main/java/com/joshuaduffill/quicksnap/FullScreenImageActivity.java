@@ -35,13 +35,10 @@ public class FullScreenImageActivity extends AppCompatActivity implements View.O
 
     private ImageView fullScreenImageView;
     private ProgressBar mProgressBar;
-    private Bitmap mPhotoBitmap;
     private Uri fileUri;
 
     // An object that manages Messages in a Thread
-    private Handler mHandler;
     private File deleteFile;
-    private String deletedFileLocation = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +82,7 @@ public class FullScreenImageActivity extends AppCompatActivity implements View.O
                             }
                         })
                         .into(fullScreenImageView);
-                Toast.makeText(this, imageUri.getPath(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, imageUri.getPath(), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -137,18 +134,7 @@ public class FullScreenImageActivity extends AppCompatActivity implements View.O
                 startActivity(Intent.createChooser(shareIntent, "send to"));
                 return true;
             case R.id.option_favourite:
-
                 Toast.makeText(this, "This feature has not be implemented yet", Toast.LENGTH_SHORT).show();
-//                File photoFile = null;
-//                photoFile = getFilesDir();
-//
-//                String authorities = getApplicationContext().getPackageName() + ".fileprovider";
-//                fileUri = FileProvider.getUriForFile(getApplicationContext(), authorities, new File(fileUri.getPath()));
-//
-//                Intent favIntent = new Intent(this, FavouritesActivity.class);
-//                favIntent.setData(fileUri);
-//                startActivity(favIntent);
-
                 return true;
                 //add more here
             default:
@@ -180,7 +166,6 @@ public class FullScreenImageActivity extends AppCompatActivity implements View.O
 
                             //gets fileUri path and deletes the file
                             deleteFile = new File(fileUri.getPath());
-                            deletedFileLocation = deleteFile.getAbsolutePath();
 
                             boolean deleted = deleteFile.delete();
 
@@ -240,19 +225,6 @@ public class FullScreenImageActivity extends AppCompatActivity implements View.O
     public boolean onTouch(View v, MotionEvent event) {
         View decorView = getWindow().getDecorView();
         switch (event.getAction()){
-
-//            case MotionEvent.ACTION_CANCEL:
-//                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-//                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-//                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-//                );
-//            break;
-//            case MotionEvent.ACTION_DOWN:
-//                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-//                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-//                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-//                );
-//            break;
             case MotionEvent.ACTION_UP:
                 decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN

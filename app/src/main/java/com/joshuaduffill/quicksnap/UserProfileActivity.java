@@ -241,15 +241,10 @@ public class UserProfileActivity extends AppCompatActivity
 
 
 //            startActivity(editPhotoIntent);
-            Toast.makeText(this, "photo taken and saved", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "photo taken and saved", Toast.LENGTH_SHORT).show();
 
             //refreshes the recycler view (list of images)
             getSupportLoaderManager().restartLoader(MEDIASTORE_LOADER_ID,null,this);
-
-//            Intent mediaScanIntent = new Intent (Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-//            sendBroadcast(mediaScanIntent);
-
-
             MediaScannerConnection.scanFile(
                     getApplicationContext(),
                     new String[]{mImageFileLocation},
@@ -276,11 +271,6 @@ public class UserProfileActivity extends AppCompatActivity
     }
 
     private void createImageGallery(){
-//        File mGalleryFolder = new File(Environment.getExternalStorageDirectory(), GALLERY_DIRECTORY_NAME);
-
-        //reference to the device storage
-//        mGalleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), GALLERY_DIRECTORY_NAME);
-
         Toast.makeText(this, mGalleryFolder.toString(), Toast.LENGTH_LONG).show();
         //does PICTURES directory exist?
         if(!mGalleryFolder.exists()){
@@ -293,19 +283,8 @@ public class UserProfileActivity extends AppCompatActivity
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "IMAGE_" + timeStamp;
 
-//        //Stores a original copy of the picture on PICTURES FOLDER
-//        File storageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-//        File image = File.createTempFile(imageFileName,".jpg",storageDirectory());
-
-        //stores picture in extra output directory
-//        File tempDir= Environment.getExternalStorageDirectory();
-//        tempDir=new File(tempDir.getAbsolutePath()+"/.temp/");
-
         File image = File.createTempFile(imageFileName,".jpg",getExternalCacheDir());
         image.deleteOnExit();
-
-//        //Saves original copy on custom folder "QuickSnap"
-//        File image = new File(mGalleryFolder + File.separator + imageFileName + ".jpg");
 
         //creates image and stores in external chache directory
 //        File image = File.createTempFile(imageFileName,".jpg",getExternalCacheDir());
@@ -377,12 +356,6 @@ public class UserProfileActivity extends AppCompatActivity
             default:
                 return super.onOptionsItemSelected(item);
         }
-
-////        noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
     }
 
 

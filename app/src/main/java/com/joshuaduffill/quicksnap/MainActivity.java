@@ -31,16 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private final static int READ_EXTERNAL_STORAGE_PERMISSION_RESULT = 0;
 
     //initialize our variables
-
-//    private Button btnRegister;
-//    private EditText etEmail;
-//    private EditText etPassword;
-//    private TextView txtSignIn;
-//
-//    private ProgressDialog progressDialog;
-//
-//    private FirebaseAuth firebaseAuth;
-
     private Button btnSignIn;
     private EditText etEmail;
     private EditText etPassword;
@@ -95,34 +85,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Start the thread
         t.start();
-
-
-//        //initializing FireBase Auth object
-//        firebaseAuth = FirebaseAuth.getInstance();
-//
-//        //initialising Views
-//        progressDialog = new ProgressDialog(this);
-//        btnRegister = (Button) findViewById(R.id.btnRegister);
-//        etEmail = (EditText) findViewById(R.id.etEmail);
-//        etPassword = (EditText) findViewById(R.id.etPassword);
-//        txtSignIn = (TextView) findViewById(R.id.txtSignIn);
-//
-//        btnRegister.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                registerUser();
-//
-//            }
-//        });
-//        txtSignIn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                finish();
-//                startActivity(new Intent(getApplicationContext(),LoginActivity.class));
-//
-//            }
-//        });
-
 
         //initialise database Auth
         firebaseAuth = FirebaseAuth.getInstance();

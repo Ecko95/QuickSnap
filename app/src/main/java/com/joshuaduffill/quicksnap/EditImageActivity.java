@@ -33,23 +33,17 @@ import java.util.Date;
 
 public class EditImageActivity extends AppCompatActivity {
 
-    private ImageView mPhotoCaptuedImageView;
+    private ImageView mPhotoCapturedImageView;
     private Bitmap mEditedBitmap;
-
     private Bitmap mOriginalBitmap;
     private Bitmap mGreyscaleBitmap;
     private Bitmap mInvertBitmap;
-
     private ProgressBar mProgressBar;
     private ProgressBar mRenderingBar;
     private HorizontalScrollView mfilterView;
     private ImageButton mButtonFilter;
     private Button mCancelButton;
-
-    private File editedImage;
-
     private Uri fileUri;
-
     private String GALLERY_DIRECTORY_NAME = "QuickSnap";
     private File mGalleryFolder;
 
@@ -73,11 +67,9 @@ public class EditImageActivity extends AppCompatActivity {
         mfilterView = (HorizontalScrollView) findViewById(R.id.filterScrollView);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBarImage);
         mRenderingBar = (ProgressBar) findViewById(R.id.renderingProgressBar);
-        mPhotoCaptuedImageView = (ImageView) findViewById(R.id.editImageView);
+        mPhotoCapturedImageView = (ImageView) findViewById(R.id.editImageView);
         mCancelButton = (Button) findViewById(R.id.btn_cancel);
 
-//        Intent intent = getIntent();
-//        Uri imageUri = intent.getParcelableExtra("URL");
         createImageGallery();
 
         Intent callActivityIntent = getIntent();
@@ -104,23 +96,15 @@ public class EditImageActivity extends AppCompatActivity {
                         }
                     })
 
-                    .into(mPhotoCaptuedImageView);
-                    Toast.makeText(this, "Original Image saved - from camera", Toast.LENGTH_SHORT).show();
-//            .into(new SimpleTarget<Bitmap>(600,600) {
-////                @Override
-////                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-////                    mPhotoCaptuedImageView.setImageBitmap(resource);
-////                    mOriginalBitmap = resource;
-////                }
-////            });
+                    .into(mPhotoCapturedImageView);
+//                    Toast.makeText(this, "Original Image saved - from camera", Toast.LENGTH_SHORT).show();
         }
 
     }
 
     private void createImageGallery(){
         mGalleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), GALLERY_DIRECTORY_NAME);
-//        File mGalleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), GALLERY_DIRECTORY_NAME);
-        Toast.makeText(this, mGalleryFolder.toString(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, mGalleryFolder.toString(), Toast.LENGTH_LONG).show();
         //does PICTURES directory exist?
         if(!mGalleryFolder.exists()){
             mGalleryFolder.mkdirs();
@@ -161,7 +145,7 @@ public class EditImageActivity extends AppCompatActivity {
     private File saveImage() throws IOException{
 
 
-        mEditedBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
+        mEditedBitmap = ((BitmapDrawable)mPhotoCapturedImageView.getDrawable()).getBitmap();
         if (mEditedBitmap == null){
             Toast.makeText(this, "No picture found", Toast.LENGTH_SHORT).show();
         }
@@ -183,7 +167,7 @@ public class EditImageActivity extends AppCompatActivity {
 
 
     public void finishRendering(){
-        Toast.makeText(EditImageActivity.this, "Done!", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(EditImageActivity.this, "Done!", Toast.LENGTH_SHORT).show();
         mRenderingBar.setVisibility(View.GONE);
     }
 
@@ -198,7 +182,7 @@ public class EditImageActivity extends AppCompatActivity {
 
         mfilterView.setAlpha(0.0f);
 
-// Start the animation
+        // Start the animation
         mfilterView.animate()
                 .alpha(1.0f);
 
@@ -246,7 +230,7 @@ public class EditImageActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mPhotoCaptuedImageView.setImageBitmap(mGreyscaleBitmap);
+                        mPhotoCapturedImageView.setImageBitmap(mGreyscaleBitmap);
                         finishRendering();
                     }
                 });
@@ -264,7 +248,7 @@ public class EditImageActivity extends AppCompatActivity {
                     @Override
                     public void run() {
 
-                        mPhotoCaptuedImageView.setImageBitmap(mEditedBitmap);
+                        mPhotoCapturedImageView.setImageBitmap(mEditedBitmap);
                         mGreyscaleBitmap = mEditedBitmap;
 
                         finishRendering();
@@ -291,7 +275,7 @@ public class EditImageActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mPhotoCaptuedImageView.setImageBitmap(mInvertBitmap);
+                        mPhotoCapturedImageView.setImageBitmap(mInvertBitmap);
                         finishRendering();
                     }
                 });
@@ -307,7 +291,7 @@ public class EditImageActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mPhotoCaptuedImageView.setImageBitmap(mEditedBitmap);
+                        mPhotoCapturedImageView.setImageBitmap(mEditedBitmap);
                         mInvertBitmap = mEditedBitmap;
 
                         finishRendering();
@@ -336,7 +320,7 @@ public class EditImageActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mPhotoCaptuedImageView.setImageBitmap(mOriginalBitmap);
+                    mPhotoCapturedImageView.setImageBitmap(mOriginalBitmap);
                     finishRendering();
                 }
             });
@@ -365,7 +349,7 @@ public class EditImageActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mPhotoCaptuedImageView.setImageBitmap(mEditedBitmap);
+                    mPhotoCapturedImageView.setImageBitmap(mEditedBitmap);
                     finishRendering();
                 }
             });
@@ -397,7 +381,7 @@ public class EditImageActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mPhotoCaptuedImageView.setImageBitmap(mEditedBitmap);
+                    mPhotoCapturedImageView.setImageBitmap(mEditedBitmap);
                     finishRendering();
                 }
             });
@@ -428,7 +412,7 @@ public class EditImageActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mPhotoCaptuedImageView.setImageBitmap(mEditedBitmap);
+                    mPhotoCapturedImageView.setImageBitmap(mEditedBitmap);
                     finishRendering();
                 }
             });
@@ -466,27 +450,19 @@ public class EditImageActivity extends AppCompatActivity {
                 }if(x == 1){
                     Log.v("execute: ", "contrast");
                     //darkroom filters
-//                    mEditedBitmap = imageProcessor.doBrightness(mEditedBitmap,-20);
+                    //mEditedBitmap = imageProcessor.doBrightness(mEditedBitmap,-20);
                 }
-                //renders invert image
-//                ImageProcessor imageProcessor = new ImageProcessor();
-//                mEditedBitmap = imageProcessor.createShadow(mOriginalBitmap);
-//                mEditedBitmap = imageProcessor.boost(mOriginalBitmap,2,0.6);
-//                mEditedBitmap = imageProcessor.boost(mOriginalBitmap,3,0.6);
-//                mEditedBitmap = imageProcessor.createContrast(mOriginalBitmap,-5);
-//                mEditedBitmap = imageProcessor.createSepiaToningEffect(mOriginalBitmap,0,0.299,0.587,0.114);
+
             }catch (Exception ex){
                 ex.printStackTrace();
             }
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mPhotoCaptuedImageView.setImageBitmap(mEditedBitmap);
+                    mPhotoCapturedImageView.setImageBitmap(mEditedBitmap);
                     finishRendering();
                 }
             });
-
-
         }
     };
 
@@ -500,19 +476,19 @@ public class EditImageActivity extends AppCompatActivity {
         invertRendering.start();
     }
     public void btn_rotate_90 (View view){
-        mEditedBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
+        mEditedBitmap = ((BitmapDrawable)mPhotoCapturedImageView.getDrawable()).getBitmap();
         rotate90.start();
     }
     public void btn_rotate_180 (View view){
-        mEditedBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
+        mEditedBitmap = ((BitmapDrawable)mPhotoCapturedImageView.getDrawable()).getBitmap();
         rotate180.start();
     }
     public void btn_sharpen_filter (View view){
-        mEditedBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
+        mEditedBitmap = ((BitmapDrawable)mPhotoCapturedImageView.getDrawable()).getBitmap();
         sharpen.start();
     }
     public void btn_hue(View view){
-        mEditedBitmap = ((BitmapDrawable)mPhotoCaptuedImageView.getDrawable()).getBitmap();
+        mEditedBitmap = ((BitmapDrawable)mPhotoCapturedImageView.getDrawable()).getBitmap();
         hueBlue.start();
     }
 
