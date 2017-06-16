@@ -23,18 +23,16 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
     private Cursor mMediaStoreCursor;
     private final Activity mActivity;
     private OnClickThumbnailListener mOnclickThumbnailListener;
-    private View.OnLongClickListener mOnlongClickThumbnailListener;
 
     public interface OnClickThumbnailListener{
         void OnClickImage(Uri imageUri);
         void OnClickVideo(Uri videoUri);
-//        void OnLongClick(Uri imageUri);
+
     }
 
     public MediaStoreAdapter(Activity activity) {
         this.mActivity = activity;
         this.mOnclickThumbnailListener = (OnClickThumbnailListener)activity;
-//        this.mOnlongClickThumbnailListener = (View.OnLongClickListener)activity;
     }
 
     @Override
@@ -76,7 +74,7 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
         return (mMediaStoreCursor == null) ? 0 : mMediaStoreCursor.getCount();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener{
 
         private final ImageView mImageView;
 
@@ -96,11 +94,12 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
             getOnClickUri(getAdapterPosition());
         }
 
-//        @Override
-//        public boolean onLongClick(View v) {
-//            getOnClickUri(getAdapterPosition());
-//            return true;
-//        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            getOnClickUri(getAdapterPosition());
+            return true;
+        }
     }
 
     private Cursor swapCursor(Cursor cursor){
@@ -159,26 +158,6 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
         return mediaUri;
     }
 
-//    private void getOnLongClickUri(int position){
-//        int mediaTypeIndex = mMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns.MEDIA_TYPE);
-//        int dataIndex = mMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
-//
-//        //checks if file is video or image
-//        mMediaStoreCursor.moveToPosition(position);
-//        String dataString = mMediaStoreCursor.getString(dataIndex);
-//        Uri mediaUri = Uri.parse("file://" + dataString);
-//
-//        switch (mMediaStoreCursor.getInt(mediaTypeIndex)){
-//            case MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE:
-//                mOnlongClickThumbnailListener.onLongClick(mediaUri);
-//                break;
-//            case MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO:
-//                mOnclickThumbnailListener.OnClickVideo(mediaUri);
-//                break;
-//            default:
-//        }
-//    }
-
     //gets uri of clicked image
     private void getOnClickUri(int position){
 
@@ -200,8 +179,4 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
             default:
         }
     }
-//    public void refreshBlockOverlay(int position) {
-//        notifyItemChanged(position);
-//    }
-
 }

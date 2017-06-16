@@ -67,7 +67,7 @@ public class EditImageActivity extends AppCompatActivity {
             //error
         }
 
-        setContentView(R.layout.activity_edit_image2);
+        setContentView(R.layout.activity_edit_image);
 
         mButtonFilter = (ImageButton) findViewById(R.id.btn_filters);
         mfilterView = (HorizontalScrollView) findViewById(R.id.filterScrollView);

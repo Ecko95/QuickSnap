@@ -47,6 +47,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.kobakei.ratethisapp.RateThisApp;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -57,6 +58,7 @@ import java.util.Date;
 import static android.R.attr.id;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.joshuaduffill.quicksnap.R.id.WebView;
 import static com.joshuaduffill.quicksnap.R.id.cameraFab;
 import static com.joshuaduffill.quicksnap.R.id.drawer_layout;
 import static com.joshuaduffill.quicksnap.R.id.fullScreenImageView;
@@ -98,6 +100,9 @@ public class UserProfileActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        RateThisApp.Config config = new RateThisApp.Config(3, 5);
+        RateThisApp.init(config);
+
         firebaseAuth = FirebaseAuth.getInstance();
 
         if(firebaseAuth.getCurrentUser() == null){
@@ -121,13 +126,6 @@ public class UserProfileActivity extends AppCompatActivity
         TextView companyNameTxt = (TextView) mHeaderView.findViewById(R.id.txtProfileEmail);
 
         companyNameTxt.setText(user.getEmail());
-
-
-
-
-
-        navigationView.setCheckedItem(R.id.nav_gallery);
-//        checkReadExternalStoragePermission();
 
         //sets number og columns
         mThumbailRecyclerView = (RecyclerView) findViewById(R.id.thumbnailRecyclerView);
@@ -396,16 +394,21 @@ public class UserProfileActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_favourites) {
-//
-
-        } else if (id == R.id.nav_gallery) {
-
+            Toast.makeText(this, "This feature is yet to be implemented", Toast.LENGTH_SHORT).show();
 
         } else if (id == R.id.nav_manage) {
+            Toast.makeText(this, "Settings menu is not available", Toast.LENGTH_SHORT).show();
 
         } else if (id == R.id.nav_rate_us) {
 
+            // Monitor launch times and interval from installation
+            RateThisApp.onCreate(this);
+            // If the condition is satisfied, "Rate this app" dialog will be shown
+            RateThisApp.showRateDialog(this);
+
         } else if (id == R.id.nav_about) {
+            Intent webIntent = new Intent(this, WebActivity.class);
+            startActivity(webIntent);
 
         } else if (id == R.id.nav_log_out){
             firebaseAuth.signOut();
@@ -471,19 +474,13 @@ public class UserProfileActivity extends AppCompatActivity
 
     }
 
+
     @Override
     public void OnClickVideo(Uri videoUri) {
         Intent videoPlayIntent = new Intent(this, VideoPlayActivity.class);
         videoPlayIntent.setData(videoUri);
         startActivity(videoPlayIntent);
     }
-
-//    @Override
-//    public void OnLongClick(Uri imageUri) {
-//        Intent videoPlayIntent = new Intent(this, FullScreenImageActivity.class);
-//        videoPlayIntent.setData(imageUri);
-//        startActivity(videoPlayIntent);
-//    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

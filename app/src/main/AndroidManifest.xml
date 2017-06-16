@@ -48,7 +48,8 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name=".FavouritesActivity"></activity>
+        <activity android:name=".FavouritesActivity" />
+        <activity android:name=".WebActivity" />
     </application>
 
 </manifest>

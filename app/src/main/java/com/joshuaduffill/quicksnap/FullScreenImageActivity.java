@@ -137,15 +137,17 @@ public class FullScreenImageActivity extends AppCompatActivity implements View.O
                 startActivity(Intent.createChooser(shareIntent, "send to"));
                 return true;
             case R.id.option_favourite:
-                File photoFile = null;
-                photoFile = getFilesDir();
 
-                String authorities = getApplicationContext().getPackageName() + ".fileprovider";
-                fileUri = FileProvider.getUriForFile(getApplicationContext(), authorities, new File(fileUri.getPath()));
-
-                Intent favIntent = new Intent(this, FavouritesActivity.class);
-                favIntent.setData(fileUri);
-                startActivity(favIntent);
+                Toast.makeText(this, "This feature has not be implemented yet", Toast.LENGTH_SHORT).show();
+//                File photoFile = null;
+//                photoFile = getFilesDir();
+//
+//                String authorities = getApplicationContext().getPackageName() + ".fileprovider";
+//                fileUri = FileProvider.getUriForFile(getApplicationContext(), authorities, new File(fileUri.getPath()));
+//
+//                Intent favIntent = new Intent(this, FavouritesActivity.class);
+//                favIntent.setData(fileUri);
+//                startActivity(favIntent);
 
                 return true;
                 //add more here
